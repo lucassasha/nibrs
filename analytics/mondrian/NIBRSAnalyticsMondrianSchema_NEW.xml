@@ -631,7 +631,7 @@
       <Dimension source="TypeOfWeaponForceInvolved"/>
       <Dimension visible="true" name="Victim Age Min" key="VictimAge">
         <Attributes>
-          <Attribute name="Victim Age" keyColumn="VictimAgeDim" hasHierarchy="false" table="FullIncidentView" orderByColumn="VictimAgeDimSort"/>
+          <Attribute name="VictimAge" keyColumn="VictimAgeDim" hasHierarchy="false" table="FullIncidentView" orderByColumn="VictimAgeDimSort"/>
           <Attribute name="VictimAgeGroup" keyColumn="VictimAgeGroup" hasHierarchy="false" table="FullIncidentView" orderByColumn="VictimAgeGroupSort"/>
           <Attribute name="VictimUcrAgeGroup" keyColumn="VictimUcrAgeGroup" hasHierarchy="false" table="FullIncidentView" orderByColumn="VictimUcrAgeGroupSort"/>
         </Attributes>
