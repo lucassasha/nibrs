@@ -875,6 +875,7 @@ convertStagingTablesToDimensional <- function(dimensionTables, factTables, ageGr
       ArrestDate,
       TypeOfArrestTypeID,
       UCROffenseCodeTypeID,
+      AgeNumArrestee,
       AgeOfArresteeMin,
       AgeOfArresteeMax,
       ArresteeAgeDim,
