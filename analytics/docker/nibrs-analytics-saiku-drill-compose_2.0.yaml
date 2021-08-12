@@ -1,6 +1,6 @@
 # Docker Compose file that creates a saiku instance backed by drill
 # this has to be run once the drill filesystem has been populated by a loading process
-# # To run:  docker-compose -f nibrs-analytics-saiku-drill-compose_jd.yaml up -d
+# # To run:  docker-compose -f nibrs-analytics-saiku-drill-compose_2.0.yaml up -d
 
 version: '3.2'
 

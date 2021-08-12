@@ -1,5 +1,5 @@
 # Docker Compose file that brings up containers necessary for NIBRS analytics using drill as the dimensional persistence layer
-# To run:  docker-compose -f nibrs-analytics-drill-compose_jd.yaml up -d
+# To run:  docker-compose -f nibrs-analytics-drill-compose_2.0.yaml up -d
 
 version: '3.2'
 
@@ -22,7 +22,6 @@ services:
 
   nibrs-analytics-drill:
     container_name: nibrs-analytics-drill
-#    image: docker.pkg.github.com/ojbc/analytics/nibrs-drill:1.0
     image: ghcr.io/ojbc/analytics/nibrs-drill:1.0
     restart: always
     ports:
