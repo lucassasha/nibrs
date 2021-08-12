@@ -22,7 +22,7 @@ services:
 
   nibrs-analytics-drill:
     container_name: nibrs-analytics-drill
-    image: ghcr.io/ojbc/analytics/nibrs-drill:1.0
+    image: searchncjis/nibrs-drill
     restart: always
     ports:
       - 8047:8047
