@@ -646,6 +646,20 @@
           </Hierarchy>
         </Hierarchies>
       </Dimension>
+      
+      <Dimension visible="true" name="Victim Age Num" key="VictimAge">
+        <Attributes>
+          <Attribute name="VictimAge" keyColumn="AgeNumVictim" hasHierarchy="false" table="FullIncidentView" orderByColumn="AgeNumVictim"/>
+        </Attributes>
+        <Hierarchies>
+          <Hierarchy name="Victim Age"  visible="true" hasAll="true"  allMemberCaption="All Ages">
+            <Level attribute="VictimAge" caption="Victim Age Num"/>
+          </Hierarchy>
+        </Hierarchies>
+      </Dimension>      
+      
+      
+      
       <Dimension visible="true" name="Offender Age" key="OffenderAge">
         <Attributes>
           <Attribute name="OffenderAge" keyColumn="OffenderAgeDim" hasHierarchy="false" table="FullIncidentView" orderByColumn="AgeOfOffenderMin"/>
@@ -663,6 +677,19 @@
           </Hierarchy>
         </Hierarchies>
       </Dimension>
+      
+      <Dimension visible="true" name="Offender Age Num" key="OffenderAge">
+        <Attributes>
+          <Attribute name="OffenderAge" keyColumn="AgeNumOffender" hasHierarchy="false" table="FullIncidentView" orderByColumn="AgeNumOffender"/>
+        </Attributes>
+        <Hierarchies>
+          <Hierarchy name="Offender Age"  visible="true" hasAll="true"  allMemberCaption="All Ages">
+            <Level attribute="OffenderAge" caption="Offender Age Num"/>
+          </Hierarchy>
+        </Hierarchies>
+      </Dimension>        
+      
+      
       <Dimension source="VictimOffenderRelationship"/>
       <Dimension visible="true" name="Stolen Motor Vehicles">
         <Attributes>
@@ -729,6 +756,7 @@
           <FactLink dimension="Arrestees Per Incident"/>
           <FactLink dimension="Premises Entered"/>
           <FactLink dimension="Victim Age"/>
+          <FactLink dimension="Victim Age Num"/>
           <ForeignKeyLink dimension="TypeOfCriminalActivity" foreignKeyColumn="TypeOfCriminalActivityTypeID"/>
           <ForeignKeyLink dimension="AggravatedAssaultHomicideCircumstances" foreignKeyColumn="AggravatedAssaultHomicideCircumstancesTypeID"/>
           <ForeignKeyLink dimension="OffenderSuspectedOfUsing" foreignKeyColumn="OffenderSuspectedOfUsingTypeID"/>
@@ -737,6 +765,7 @@
           <ForeignKeyLink dimension="OffenderRace" foreignKeyColumn="OffenderRaceOfPersonTypeID"/>
           <ForeignKeyLink dimension="OffenderEthnicity" foreignKeyColumn="OffenderEthnicityOfPersonTypeID"/>
           <FactLink dimension="Offender Age"/>
+          <FactLink dimension="Offender Age Num"/>
           <ForeignKeyLink dimension="VictimOffenderRelationship" foreignKeyColumn="VictimOffenderRelationshipTypeID"/>
           <FactLink dimension="Stolen Motor Vehicles"/>
           <FactLink dimension="Recovered Motor Vehicles"/>
@@ -832,6 +861,21 @@
           </Hierarchy>
         </Hierarchies>
       </Dimension>
+      
+      
+      <Dimension visible="true" name="Victim Age Num" key="VictimAge">
+        <Attributes>
+          <Attribute name="VictimAge" keyColumn="AgeNumVictim" hasHierarchy="false" table="FullVictimOffenseView" orderByColumn="AgeNumVictim"/>
+        </Attributes>
+        <Hierarchies>
+          <Hierarchy name="Victim Age"  visible="true" hasAll="true"  allMemberCaption="All Ages">
+            <Level attribute="VictimAge" caption="Victim Age Num"/>
+          </Hierarchy>
+        </Hierarchies>
+      </Dimension>     
+      
+      
+      
       <Dimension source="Clearance"/>
       <Dimension source="State"/>
     </Dimensions>
@@ -866,6 +910,7 @@
           <ForeignKeyLink dimension="CompletionStatus" foreignKeyColumn="CompletionStatusIndicator"/>
           <FactLink dimension="Premises Entered"/>
           <FactLink dimension="Victim Age"/>
+          <FactLink dimension="Victim Age Num"/>
           <ForeignKeyLink dimension="TypeOfCriminalActivity" foreignKeyColumn="TypeOfCriminalActivityTypeID"/>
           <ForeignKeyLink dimension="AggravatedAssaultHomicideCircumstances" foreignKeyColumn="AggravatedAssaultHomicideCircumstancesTypeID"/>
           <ForeignKeyLink dimension="OffenderSuspectedOfUsing" foreignKeyColumn="OffenderSuspectedOfUsingTypeID"/>
@@ -977,6 +1022,19 @@
           </Hierarchy>
         </Hierarchies>
       </Dimension>
+
+      <Dimension visible="true" name="Victim Age Num" key="VictimAge">
+        <Attributes>
+          <Attribute name="VictimAge" keyColumn="AgeNumVictim" hasHierarchy="false" table="FullVictimOffenderView" orderByColumn="AgeNumVictim"/>
+        </Attributes>
+        <Hierarchies>
+          <Hierarchy name="Victim Age"  visible="true" hasAll="true"  allMemberCaption="All Ages">
+            <Level attribute="VictimAge" caption="Victim Age Num"/>
+          </Hierarchy>
+        </Hierarchies>
+      </Dimension>    
+      
+      
       <Dimension visible="true" name="Offender Age" key="OffenderAge">
         <Attributes>
           <Attribute name="OffenderAge" keyColumn="OffenderAgeDim" hasHierarchy="false" table="FullVictimOffenderView" orderByColumn="AgeOfOffenderMin"/>
@@ -994,6 +1052,20 @@
           </Hierarchy>
         </Hierarchies>
       </Dimension>
+      
+      <Dimension visible="true" name="Offender Age Num" key="OffenderAge">
+        <Attributes>
+          <Attribute name="OffenderAge" keyColumn="AgeNumOffender" hasHierarchy="false" table="FullVictimOffenderView" orderByColumn="AgeNumOffender"/>
+        </Attributes>
+        <Hierarchies>
+          <Hierarchy name="Offender Age"  visible="true" hasAll="true"  allMemberCaption="All Ages">
+            <Level attribute="OffenderAge" caption="Offender Age Num"/>
+          </Hierarchy>
+        </Hierarchies>
+      </Dimension>         
+      
+      
+      
       <Dimension source="VictimOffenderRelationship"/>
       <Dimension source="Clearance"/>
       <Dimension source="State"/>
@@ -1026,7 +1098,9 @@
           <ForeignKeyLink dimension="OffenderEthnicity" foreignKeyColumn="OffenderEthnicityOfPersonTypeID"/>
           <ForeignKeyLink dimension="AdditionalJustifiableHomicideCircumstances" foreignKeyColumn="AdditionalJustifiableHomicideCircumstancesTypeID"/>
           <FactLink dimension="Victim Age"/>
+          <FactLink dimension="Victim Age Num"/>
           <FactLink dimension="Offender Age"/>
+          <FactLink dimension="Offender Age Num"/>
           <ForeignKeyLink dimension="AggravatedAssaultHomicideCircumstances" foreignKeyColumn="AggravatedAssaultHomicideCircumstancesTypeID"/>
           <ForeignKeyLink dimension="VictimOffenderRelationship" foreignKeyColumn="VictimOffenderRelationshipTypeID"/>
         </DimensionLinks>
@@ -1095,6 +1169,18 @@
           </Hierarchy>
         </Hierarchies>
       </Dimension>
+      
+      <Dimension visible="true" name="Arrestee Age Num" key="ArresteeAge">
+        <Attributes>
+          <Attribute name="ArresteeAge" keyColumn="AgeNumArrestee" hasHierarchy="false" table="FullGroupAArrestView" orderByColumn="AgeNumArrestee"/>
+        </Attributes>
+        <Hierarchies>
+          <Hierarchy name="Arrestee Age"  visible="true" hasAll="true"  allMemberCaption="All Ages">
+            <Level attribute="ArresteeAge" caption="Arrestee Age Num"/>
+          </Hierarchy>
+        </Hierarchies>
+      </Dimension>           
+       
       <Dimension source="ArresteeWasArmedWith" caption="Weapon Armed With"/>
       <Dimension source="TypeOfArrest" caption="Type of Arrest"/>
       <Dimension source="DispositionOfArresteeUnder18" caption="Disposition Arrestee &lt; 18"/>
@@ -1119,6 +1205,7 @@
           <ForeignKeyLink dimension="ArresteeEthnicity" foreignKeyColumn="EthnicityOfPersonTypeID"/>
           <ForeignKeyLink dimension="ResidentStatusOfPerson" foreignKeyColumn="ResidentStatusOfPersonTypeID"/>
           <FactLink dimension="Arrestee Age"/>
+          <FactLink dimension="Arrestee Age Num"/>          
           <ForeignKeyLink dimension="ArresteeWasArmedWith" foreignKeyColumn="ArresteeWasArmedWithTypeID"/>
           <ForeignKeyLink dimension="DispositionOfArresteeUnder18" foreignKeyColumn="DispositionOfArresteeUnder18TypeID"/>
           <ForeignKeyLink dimension="TypeOfArrest" foreignKeyColumn="TypeOfArrestTypeID"/>
@@ -1187,6 +1274,18 @@
           </Hierarchy>
         </Hierarchies>
       </Dimension>
+      
+      <Dimension visible="true" name="Arrestee Age Num" key="ArresteeAge">
+        <Attributes>
+          <Attribute name="ArresteeAge" keyColumn="AgeNumArrestee" hasHierarchy="false" table="FullGroupBArrestView" orderByColumn="AgeNumArrestee"/>
+        </Attributes>
+        <Hierarchies>
+          <Hierarchy name="Arrestee Age"  visible="true" hasAll="true"  allMemberCaption="All Ages">
+            <Level attribute="ArresteeAge" caption="Arrestee Age Num"/>
+          </Hierarchy>
+        </Hierarchies>
+      </Dimension>  
+      
       <Dimension source="TypeOfArrest" caption="Type of Arrest"/>
       <Dimension source="DispositionOfArresteeUnder18" caption="Disposition Arrestee &lt; 18"/>
       <Dimension source="ArresteeWasArmedWith" caption="Weapon Armed With"/>
@@ -1207,6 +1306,7 @@
           <ForeignKeyLink dimension="ArresteeEthnicity" foreignKeyColumn="EthnicityOfPersonTypeID"/>
           <ForeignKeyLink dimension="ResidentStatusOfPerson" foreignKeyColumn="ResidentStatusOfPersonTypeID"/>
           <FactLink dimension="Arrestee Age"/>
+          <FactLink dimension="Arrestee Age Num"/>
           <ForeignKeyLink dimension="ArresteeWasArmedWith" foreignKeyColumn="ArresteeWasArmedWithTypeID"/>
           <ForeignKeyLink dimension="DispositionOfArresteeUnder18" foreignKeyColumn="DispositionOfArresteeUnder18TypeID"/>
           <ForeignKeyLink dimension="TypeOfArrest" foreignKeyColumn="TypeOfArrestTypeID"/>

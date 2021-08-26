@@ -11,9 +11,6 @@ loadMultiStateYearDataToParquetDimensional <- function(zipDirectory, codeTableLi
                                                        drillPort=8047L,
                                                        writeProgressDetail=TRUE, cleanUpCsv=TRUE, reusePriorCsv=FALSE, accumListStorageDir='.') {
 
-  writeLines('START HERE!!!')  # JD
-
-
   if (is.null(codeTableList)) {
     writeLines('Loading code tables')
     codeTableList <- loadCodeTables(quiet=TRUE)
@@ -705,7 +702,6 @@ loadCDEVictimData <- function(tableList, agencyDf, directory, fixFilename, write
       OfficerActivityCircumstanceTypeID,
       OfficerAssignmentTypeTypeID,
       OfficerOtherJurisdictionORI,
-      AgeNumVictim=AGE_NUM,
       starts_with('AgeOfVictim'),
       matches('^Age.+Indicator$'),
       NonNumericAge,
@@ -827,7 +823,6 @@ loadCDEOffenderData <- function(tableList, directory, fixFilename, writeProgress
     select(OffenderSegmentID=OFFENDER_ID,
            AdministrativeSegmentID=INCIDENT_ID,
            OffenderSequenceNumber=OFFENDER_SEQ_NUM,
-           AgeNumOffender=AGE_NUM,
            starts_with('AgeOfOffender'),
            NonNumericAge,
            ends_with('OfPersonTypeID'))
@@ -921,7 +916,6 @@ loadCDEArresteeData <- function(tableList, directory, state, fixFilename, writeP
            starts_with('ArrestDate'),
            TypeOfArrestTypeID,
            MultipleArresteeSegmentsIndicatorTypeID,
-           AgeNumArrestee=AGE_NUM,
            starts_with('AgeOfArrestee'),
            NonNumericAge,
            ends_with('OfPersonTypeID'),
@@ -945,7 +939,6 @@ loadCDEArresteeData <- function(tableList, directory, state, fixFilename, writeP
            starts_with('ArrestDate'),
            TypeOfArrestTypeID,
            MultipleArresteeSegmentsIndicatorTypeID,
-           AgeNumArrestee=AGE_NUM,
            starts_with('AgeOfArrestee'),
            NonNumericAge,
            ends_with('OfPersonTypeID'),

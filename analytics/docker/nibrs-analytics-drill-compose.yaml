@@ -1,4 +1,5 @@
 # Docker Compose file that brings up containers necessary for NIBRS analytics using drill as the dimensional persistence layer
+# To run:  docker-compose -f nibrs-analytics-drill-compose_2.0.yaml up -d
 
 version: '3.2'
 
@@ -18,6 +19,7 @@ services:
     restart: always
     networks:
       nibrs_analytics_nw:
+
   nibrs-analytics-drill:
     container_name: nibrs-analytics-drill
     image: searchncjis/nibrs-drill
@@ -27,7 +29,7 @@ services:
     networks:
       nibrs_analytics_nw:
 # uncomment this to change memory to 8G or whatever is needed
-    environment:
-      - DRILL_MAX_DIRECT_MEMORY=16G
+#    environment:
+#      - DRILL_MAX_DIRECT_MEMORY=16G
     volumes:
       - /opt/data/nibrs/cde/:/nibrs/

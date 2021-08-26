@@ -20,6 +20,7 @@ FROM ojbc/saiku:ojbc-3.17-saml
 # do this by passing --build-arg MODE=dev
 ARG MODE=prod
 
+
 WORKDIR /tmp
 
 COPY files/server-config.sh /tmp/
@@ -30,7 +31,10 @@ COPY files/NIBRSAnalyticsMondrianSchema.xml /tmp/
 
 RUN sed -Ei "s/Table(.+)\//Table\1 schema=\"dfs.nibrs\"\//g" /tmp/NIBRSAnalyticsMondrianSchema.xml
 
-RUN curl -O https://www-us.apache.org/dist/drill/drill-1.17.0/apache-drill-1.17.0.tar.gz
+### FILE HAS BEEN MOVED - Jd 5/7/21
+#RUN curl -O https://www-us.apache.org/dist/drill/drill-1.17.0/apache-drill-1.17.0.tar.gz
+RUN curl -O https://archive.apache.org/dist/drill/drill-1.17.0/apache-drill-1.17.0.tar.gz
+
 
 RUN tar -xvf apache-drill-1.17.0.tar.gz && \
   mv apache-drill-1.17.0/jars/jdbc-driver/drill-jdbc-all-1.17.0.jar /opt/saiku-server/tomcat/webapps/saiku/WEB-INF/lib/ && \
