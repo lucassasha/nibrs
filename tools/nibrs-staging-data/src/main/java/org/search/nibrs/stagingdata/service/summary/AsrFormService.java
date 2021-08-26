@@ -378,7 +378,9 @@ public class AsrFormService {
 			List<PropertySegment> propertySegments = arresteeSegment.getAdministrativeSegment()
 					.getPropertySegments()
 					.stream()
-					.filter(i->(i.getPropertyTypes().stream().anyMatch(pt -> "10".equals(pt.getPropertyDescriptionType().getNibrsCode()))))
+					.filter(i->
+						i.getTypePropertyLossEtcType().getNibrsCode().equals("1")  
+						|| i.getPropertyTypes().stream().anyMatch(pt -> "10".equals(pt.getPropertyDescriptionType().getNibrsCode())))
 					.collect(Collectors.toList());
 			if (StringUtils.isNotBlank(rowNamePrefix)){
 				List<String> suspectedDrugCode = propertySegments.stream()
@@ -409,6 +411,10 @@ public class AsrFormService {
 			}
 					
 		}
+		
+		if (asrAdultRowName.equals(Optional.empty())) {
+			asrAdultRowName = Optional.of(AsrAdultRowName.DRUG_ABUSE_VIOLATIONS_GRAND_TOTAL.name());
+		}
 		return asrAdultRowName;
 	}
 
@@ -433,9 +439,8 @@ public class AsrFormService {
 			case "DRUG_POSSESSION_SYNTHETIC_NARCOTICS":
 			case "DRUG_POSSESSION_OTHER":
 				asrRows[Enum.valueOf(asrRowEnum, "DRUG_POSSESSION_SUBTOTAL").ordinal()].getEthnicityGroups()[ethnicity.ordinal()] ++;
-				asrRows[Enum.valueOf(asrRowEnum, "DRUG_ABUSE_VIOLATIONS_GRAND_TOTAL").ordinal()].getEthnicityGroups()[ethnicity.ordinal()] ++;;
+				asrRows[Enum.valueOf(asrRowEnum, "DRUG_ABUSE_VIOLATIONS_GRAND_TOTAL").ordinal()].getEthnicityGroups()[ethnicity.ordinal()] ++;
 				break;
-				
 			case "PROSTITUTION":
 			case "ASSISTING_PROMOTING_PROSTITUTION": 
 				asrRows[Enum.valueOf(asrRowEnum, "PROSTITUTION_AND_COMMERCIALIZED_VICE").ordinal()].getEthnicityGroups()[ethnicity.ordinal()] ++;
@@ -569,6 +574,7 @@ public class AsrFormService {
 				break; 
 			}
 		}
+		
 	}
 
 	private void countToJuvenileAgeGroups(AsrJuvenileRow[] asrJuvenilRows, Integer averageAge, String sexCode,
