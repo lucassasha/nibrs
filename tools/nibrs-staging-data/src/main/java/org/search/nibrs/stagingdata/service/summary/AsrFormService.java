@@ -203,6 +203,7 @@ public class AsrFormService {
 			Optional<Agency> agency = agencyRepository.findById(summaryReportRequest.getAgencyId()); 
 			if (agency.isPresent()){
 				asrReports.setAgencyName(agency.get().getAgencyName());
+				asrReports.setOri(agency.get().getAgencyOri());;
 				asrReports.setStateName(agency.get().getStateName());
 				asrReports.setStateCode(agency.get().getStateCode());
 				asrReports.setPopulation(agency.get().getPopulation());

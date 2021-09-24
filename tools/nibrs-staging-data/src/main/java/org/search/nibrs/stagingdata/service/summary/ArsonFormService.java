@@ -200,6 +200,7 @@ public class ArsonFormService {
 			Optional<Agency> agency = agencyRepository.findById(summaryReportRequest.getAgencyId()); 
 			if (agency.isPresent()){
 				arsonReport.setAgencyName(agency.get().getAgencyName());
+				arsonReport.setOri(agency.get().getAgencyOri());;
 				arsonReport.setStateName(agency.get().getStateName());
 				arsonReport.setStateCode(agency.get().getStateCode());
 				arsonReport.setPopulation(agency.get().getPopulation());
