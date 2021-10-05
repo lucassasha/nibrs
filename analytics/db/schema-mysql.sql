@@ -1273,5 +1273,7 @@ REFERENCES OffenseSegment (OffenseSegmentID)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
-ALTER TABLE administrativesegment ADD INDEX `idx_incidentnum_agencyid` (`AgencyID` ASC,`IncidentNumber` ASC) visible;
+ALTER TABLE administrativesegment ADD INDEX `idx_incidentnum_agencyid` (`AgencyID` ASC,`IncidentNumber` ASC);
 ALTER TABLE arrestreportsegment ADD INDEX `idx_atn_agencyid` (`AgencyID` ASC, `ArrestTransactionNumber` ASC);
+ALTER TABLE administrativesegment ADD INDEX `idx_incidentnum_agencyid_ownerId` (`AgencyID` ASC,`IncidentNumber` ASC, `ownerId` asc);
+ALTER TABLE arrestreportsegment ADD INDEX `idx_atn_agencyid_ownerId` (`AgencyID` ASC, `ArrestTransactionNumber` ASC, `ownerId` asc);
