@@ -1272,3 +1272,6 @@ FOREIGN KEY (OffenseSegmentID)
 REFERENCES OffenseSegment (OffenseSegmentID)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
+
+ALTER TABLE administrativesegment ADD INDEX `idx_incidentnum_agencyid` (`AgencyID` ASC,`IncidentNumber` ASC) visible;
+ALTER TABLE arrestreportsegment ADD INDEX `idx_atn_agencyid` (`AgencyID` ASC, `ArrestTransactionNumber` ASC);
