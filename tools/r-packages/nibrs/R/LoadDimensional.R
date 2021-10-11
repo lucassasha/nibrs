@@ -66,6 +66,53 @@ FACT_TABLES <- c(
   'ArrestReportSegmentWasArmedWith'
 )
 
+DEFAULT_CATEGORY_ENHANCEMENT_FUNCTION_FACTORY <- list(
+  addLocationTypeCategories=function(tdf) {
+    tdf %>%
+      mutate(
+        LocationTypeDetailCategoryDescription=case_when(
+          LocationTypeTypeID %in% c(2,3,5,6,7,8,12,14,17,19,21,23,24,37,38,40,41,44,45,47,48,54,55) ~ "Commercial",
+          LocationTypeTypeID %in% c(1,11,22,39,57) ~ "Public",
+          LocationTypeTypeID %in% c(4) ~ "Religious",
+          LocationTypeTypeID %in% c(9) ~ "Health Facility",
+          LocationTypeTypeID %in% c(10,16,42,50,51) ~ "Outdoors",
+          LocationTypeTypeID %in% c(13,18) ~ "Roadway",
+          LocationTypeTypeID %in% c(15) ~ "Public Safety",
+          LocationTypeTypeID %in% c(20) ~ "Residence",
+          LocationTypeTypeID %in% c(25,99) ~ "Other/Unknown",
+          LocationTypeTypeID %in% c(46) ~ "Farm",
+          LocationTypeTypeID %in% c(49) ~ "Military",
+          LocationTypeTypeID %in% c(52,53) ~ "Educational Institution",
+          LocationTypeTypeID %in% c(56) ~ "Tribal",
+          LocationTypeTypeID %in% c(58) ~ "Cyberspace",
+          TRUE ~ "Unknown"
+        ),
+        LocationTypeCategoryDescription=case_when(
+          LocationTypeTypeID %in% c(20) ~ "Residence",
+          LocationTypeTypeID %in% c(25,99) ~ "Other/Unknown",
+          TRUE ~ "Non-Residence"
+        )
+      )
+  },
+  addVictimOffenderRelationshipCategories=function(tdf) {
+    tdf %>% mutate(
+      VictimOffenderRelationshipCategoryDescription=case_when(
+        VictimOffenderRelationshipTypeID %in% c(1,2,3,4,5,6,7,8,9,10,11,12) ~ "Victim was Family",
+        VictimOffenderRelationshipTypeID %in% c(18,20) ~ "Victim was Intimate Partner",
+        VictimOffenderRelationshipTypeID %in% c(14,15,16,17,19,21,22,23,24) ~ "Victim was Otherwise Known",
+        VictimOffenderRelationshipTypeID %in% c(25) ~ "Victim was Stranger",
+        VictimOffenderRelationshipTypeID %in% c(99) ~ "Relationship Unknown",
+        VictimOffenderRelationshipTypeID %in% c(98) ~ "None",
+        VictimOffenderRelationshipTypeID %in% c(13) ~ "Victim Was Offender",
+        TRUE ~ "Unknown"
+      )
+    )
+  },
+  addPropertyDescriptionCategories=function(tdf) {
+    tdf %>% mutate(PropertyDescriptionCategoryDescription=StateDescription)
+  }
+)
+
 DEFAULT_AGE_GROUP_FUNCTION_FACTORY <- list(
   createAgeGroup=function(age, AgeNeonateIndicator=NULL, AgeFirstWeekIndicator=NULL, AgeFirstYearIndicator=NULL, NonNumericAge=NULL) {
     if (is.null(AgeNeonateIndicator)) {
@@ -160,7 +207,7 @@ DEFAULT_AGE_GROUP_FUNCTION_FACTORY <- list(
 loadDimensionalFromStagingDatabase <- function(
   stagingConn=DBI::dbConnect(RMariaDB::MariaDB(), host="localhost", dbname="search_nibrs_staging", username="root"),
   dimensionalConn=DBI::dbConnect(RMariaDB::MariaDB(), host="localhost", dbname="search_nibrs_dimensional", username="root"),
-  writeToDatabase=TRUE, ageGroupFunctionFactory=NULL,
+  writeToDatabase=TRUE, ageGroupFunctionFactory=NULL, categoryEnhancementFunctionFactory=NULL,
   sampleFraction=NULL, seed=12341234) {
 
   writeLines('Reading dimension tables from staging')
@@ -179,10 +226,23 @@ loadDimensionalFromStagingDatabase <- function(
     ageGroupFunctionFactory <- DEFAULT_AGE_GROUP_FUNCTION_FACTORY
   }
 
-  if (writeToDatabase) {
-    ret <- loadDimensionalFromObjectLists(dimensionTables, factTables, dimensionalConn, ageGroupFunctionFactory, sampleFraction, seed)
+  if (is.null(categoryEnhancementFunctionFactory)) {
+    categoryEnhancementFunctionFactory <- DEFAULT_CATEGORY_ENHANCEMENT_FUNCTION_FACTORY
   } else {
-    ret <- convertStagingTablesToDimensional(dimensionTables, factTables, ageGroupFunctionFactory, sampleFraction, seed)
+    categoryEnhancementFunctionFactory <- imap(DEFAULT_CATEGORY_ENHANCEMENT_FUNCTION_FACTORY, function(f, fname) {
+      if (fname %in% names(categoryEnhancementFunctionFactory)) {
+        writeLines(paste0('Found custom category enhancement function ', fname))
+        categoryEnhancementFunctionFactory[[fname]]
+      } else {
+        f
+      }
+    })
+  }
+
+  if (writeToDatabase) {
+    ret <- loadDimensionalFromObjectLists(dimensionTables, factTables, dimensionalConn, ageGroupFunctionFactory, categoryEnhancementFunctionFactory, sampleFraction, seed)
+  } else {
+    ret <- convertStagingTablesToDimensional(dimensionTables, factTables, ageGroupFunctionFactory, categoryEnhancementFunctionFactory, sampleFraction, seed)
   }
 
   ret
@@ -204,7 +264,7 @@ loadDimensionalFromStagingDatabase <- function(
 #' @param seed random seed.  Set this to the same value in subsequent calls to generate the same random sample.
 #' @return a list with all the dimensional database tables, as tibbles
 #' @export
-convertStagingTablesToDimensional <- function(dimensionTables, factTables, ageGroupFunctionFactory, sampleFraction=NULL, seed=12341234, writeProgressDetail=TRUE) {
+convertStagingTablesToDimensional <- function(dimensionTables, factTables, ageGroupFunctionFactory, categoryEnhancementFunctionFactory, sampleFraction=NULL, seed=12341234, writeProgressDetail=TRUE) {
 
   factTables <- map(factTables, function(factTableDf) {
     if ('SegmentActionTypeTypeID' %in% colnames(factTableDf)) {
@@ -216,7 +276,7 @@ convertStagingTablesToDimensional <- function(dimensionTables, factTables, ageGr
     factTableDf
   })
 
-  dimensionTables <- enhanceDimensionTables(dimensionTables)
+  dimensionTables <- enhanceDimensionTables(dimensionTables, categoryEnhancementFunctionFactory)
 
   createOffenderAgeDim <- function(AgeOfOffenderMin, NonNumericAge) {
     if (is.null(NonNumericAge)) {
@@ -926,9 +986,9 @@ convertStagingTablesToDimensional <- function(dimensionTables, factTables, ageGr
 loadDimensionalFromObjectList <- function(
   stagingTableList,
   dimensionalConn=DBI::dbConnect(RMariaDB::MariaDB(), host="localhost", dbname="search_nibrs_dimensional", username="root"),
-  ageGroupFunctionFactory, sampleFraction=NULL, seed=12341234) {
+  ageGroupFunctionFactory, categoryEnhancementFunctionFactory, sampleFraction=NULL, seed=12341234) {
 
-  loadDimensionalFromObjectLists(stagingTableList[DIMENSION_TABLES], stagingTableList[FACT_TABLES], dimensionalConn, ageGroupFunctionFactory, sampleFraction, seed)
+  loadDimensionalFromObjectLists(stagingTableList[DIMENSION_TABLES], stagingTableList[FACT_TABLES], dimensionalConn, ageGroupFunctionFactory, categoryEnhancementFunctionFactory, sampleFraction, seed)
 
 }
 
@@ -952,9 +1012,9 @@ loadDimensionalFromObjectList <- function(
 loadDimensionalFromObjectLists <- function(
   dimensionTables, factTables,
   dimensionalConn=DBI::dbConnect(RMariaDB::MariaDB(), host="localhost", dbname="search_nibrs_dimensional", username="root"),
-  ageGroupFunctionFactory, sampleFraction=NULL, seed=12341234) {
+  ageGroupFunctionFactory, categoryEnhancementFunctionFactory, sampleFraction=NULL, seed=12341234) {
 
-  ret <- convertStagingTablesToDimensional(dimensionTables, factTables, ageGroupFunctionFactory, sampleFraction, seed)
+  ret <- convertStagingTablesToDimensional(dimensionTables, factTables, ageGroupFunctionFactory, categoryEnhancementFunctionFactory, sampleFraction, seed)
 
   iwalk(ret, function(ddf, tableName) {
     writeLines(paste0('Writing dimensional db table ', tableName))
@@ -982,49 +1042,13 @@ loadDimensionalFromObjectLists <- function(
 #' @import dplyr
 #' @import tibble
 #' @import stringr
-enhanceDimensionTables <- function(dimensionTables) {
+enhanceDimensionTables <- function(dimensionTables, categoryEnhancementFunctionFactory) {
 
   ret <- dimensionTables
 
-  ret$LocationTypeType <- ret$LocationTypeType %>%
-    mutate(
-      LocationTypeDetailCategoryDescription=case_when(
-        LocationTypeTypeID %in% c(2,3,5,6,7,8,12,14,17,19,21,23,24,37,38,40,41,44,45,47,48,54,55) ~ "Commercial",
-        LocationTypeTypeID %in% c(1,11,22,39,57) ~ "Public",
-        LocationTypeTypeID %in% c(4) ~ "Religious",
-        LocationTypeTypeID %in% c(9) ~ "Health Facility",
-        LocationTypeTypeID %in% c(10,16,42,50,51) ~ "Outdoors",
-        LocationTypeTypeID %in% c(13,18) ~ "Roadway",
-        LocationTypeTypeID %in% c(15) ~ "Public Safety",
-        LocationTypeTypeID %in% c(20) ~ "Residence",
-        LocationTypeTypeID %in% c(25,99) ~ "Other/Unknown",
-        LocationTypeTypeID %in% c(46) ~ "Farm",
-        LocationTypeTypeID %in% c(49) ~ "Military",
-        LocationTypeTypeID %in% c(52,53) ~ "Educational Institution",
-        LocationTypeTypeID %in% c(56) ~ "Tribal",
-        LocationTypeTypeID %in% c(58) ~ "Cyberspace",
-        TRUE ~ "Unknown"
-      ),
-      LocationTypeCategoryDescription=case_when(
-        LocationTypeTypeID %in% c(20) ~ "Residence",
-        LocationTypeTypeID %in% c(25,99) ~ "Other/Unknown",
-        TRUE ~ "Non-Residence"
-      )
-    )
-
-  ret$VictimOffenderRelationshipType <- ret$VictimOffenderRelationshipType %>%
-    mutate(
-      VictimOffenderRelationshipCategoryDescription=case_when(
-        VictimOffenderRelationshipTypeID %in% c(1,2,3,4,5,6,7,8,9,10,11,12) ~ "Victim was Family",
-        VictimOffenderRelationshipTypeID %in% c(18,20) ~ "Victim was Intimate Partner",
-        VictimOffenderRelationshipTypeID %in% c(14,15,16,17,19,21,22,23,24) ~ "Victim was Otherwise Known",
-        VictimOffenderRelationshipTypeID %in% c(25) ~ "Victim was Stranger",
-        VictimOffenderRelationshipTypeID %in% c(99) ~ "Relationship Unknown",
-        VictimOffenderRelationshipTypeID %in% c(98) ~ "None",
-        VictimOffenderRelationshipTypeID %in% c(13) ~ "Victim Was Offender",
-        TRUE ~ "Unknown"
-      )
-    )
+  ret$LocationTypeType <- ret$LocationTypeType %>% categoryEnhancementFunctionFactory$addLocationTypeCategories()
+  ret$VictimOffenderRelationshipType <- ret$VictimOffenderRelationshipType %>% categoryEnhancementFunctionFactory$addVictimOffenderRelationshipCategories()
+  ret$PropertyDescriptionType <- ret$PropertyDescriptionType %>% categoryEnhancementFunctionFactory$addPropertyDescriptionCategories()
 
   ret$CompletionStatusType <- tribble(
     ~CompletionStatusTypeID, ~CompletionStatusDescription,
