@@ -88,6 +88,7 @@ public class VictimSegment implements Serializable{
 	private String officerOtherJurisdictionOri; 
 	private Integer ageOfVictimMin; 
 	private Integer ageOfVictimMax; 
+	private Integer ageNumVictim; 
 	private Integer ageNeonateIndicator;
 	private Integer ageFirstWeekIndicator;
 	private Integer ageFirstYearIndicator;
@@ -460,6 +461,12 @@ public class VictimSegment implements Serializable{
 			ageString = nonNumericAge;
 		}
 		return ageString;
+	}
+	public Integer getAgeNumVictim() {
+		return ageNumVictim;
+	}
+	public void setAgeNumVictim(Integer ageNumVictim) {
+		this.ageNumVictim = ageNumVictim;
 	}
 
 }

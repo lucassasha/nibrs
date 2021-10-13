@@ -101,6 +101,7 @@ public class ArrestReportSegment {
 	private TypeOfArrestType typeOfArrestType; 
 	private Integer ageOfArresteeMin; 
 	private Integer ageOfArresteeMax;
+	private Integer ageNumArrestee;
 	private String nonNumericAge;
 
 	@ManyToOne(fetch=FetchType.LAZY)
@@ -486,6 +487,12 @@ public class ArrestReportSegment {
 	}
 	public void setOwner(Owner owner) {
 		this.owner = owner;
+	}
+	public Integer getAgeNumArrestee() {
+		return ageNumArrestee;
+	}
+	public void setAgeNumArrestee(Integer ageNumArrestee) {
+		this.ageNumArrestee = ageNumArrestee;
 	}
 
 }

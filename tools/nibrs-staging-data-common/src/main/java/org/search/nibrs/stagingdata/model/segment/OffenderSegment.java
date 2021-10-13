@@ -63,6 +63,7 @@ public class OffenderSegment {
 
 	private Integer ageOfOffenderMin; 
 	private Integer ageOfOffenderMax;
+	private Integer ageNumOffender;
 	private String nonNumericAge; 
 	@ManyToOne
 	@JoinColumn(name="sexOfPersonTypeId") 
@@ -201,5 +202,11 @@ public class OffenderSegment {
 			ageString = nonNumericAge;
 		}
 		return ageString;
+	}
+	public Integer getAgeNumOffender() {
+		return ageNumOffender;
+	}
+	public void setAgeNumOffender(Integer ageNumOffender) {
+		this.ageNumOffender = ageNumOffender;
 	}
 }

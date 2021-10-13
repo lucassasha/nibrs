@@ -485,6 +485,7 @@ public class GroupAIncidentService {
 				Optional<NIBRSAge> victimAge = Optional.ofNullable(victim.getAge());
 				victimSegment.setAgeOfVictimMax(victimAge.map(NIBRSAge::getAgeMax).orElse(null));
 				victimSegment.setAgeOfVictimMin(victimAge.map(NIBRSAge::getAgeMin).orElse(null));
+				victimSegment.setAgeNumVictim(victimAge.map(NIBRSAge::getAverage).orElse(null));
 				victimSegment.setAgeNeonateIndicator(BooleanUtils.toIntegerObject(victimAge.map(NIBRSAge::isNeonate).orElse(false)));
 				victimSegment.setAgeFirstWeekIndicator(BooleanUtils.toIntegerObject(victimAge.map(NIBRSAge::isNewborn).orElse(false)));
 				victimSegment.setAgeFirstYearIndicator(BooleanUtils.toIntegerObject(victimAge.map(NIBRSAge::isBaby).orElse(false)));
@@ -650,6 +651,7 @@ public class GroupAIncidentService {
 				Optional<NIBRSAge> arresteeAge = Optional.ofNullable(arrestee.getAge());
 				arresteeSegment.setAgeOfArresteeMin(arresteeAge.map(NIBRSAge::getAgeMin).orElse(null));
 				arresteeSegment.setAgeOfArresteeMax(arresteeAge.map(NIBRSAge::getAgeMax).orElse(null));
+				arresteeSegment.setAgeNumArrestee(arresteeAge.map(NIBRSAge::getAverage).orElse(null));
 				arresteeSegment.setNonNumericAge(arresteeAge.map(NIBRSAge::getNonNumericAge).orElse(null));
 				
 				SexOfPersonType sexOfPersonType = codeTableService.getCodeTableType(
@@ -705,6 +707,8 @@ public class GroupAIncidentService {
 				Optional<NIBRSAge> offenderAge = Optional.ofNullable(offender.getAge());
 				offenderSegment.setAgeOfOffenderMax(offenderAge.map(NIBRSAge::getAgeMax).orElse(null));
 				offenderSegment.setAgeOfOffenderMin(offenderAge.map(NIBRSAge::getAgeMin).orElse(null));
+				offenderSegment.setAgeNumOffender(offenderAge.map(NIBRSAge::getAverage).orElse(null));
+
 				offenderSegment.setNonNumericAge(offenderAge.map(NIBRSAge::getNonNumericAge).orElse(null));
 				offenderSegment.setOffenderSequenceNumber(offender.getOffenderSequenceNumber().getValue());
 				

@@ -319,6 +319,7 @@ public class ArrestReportService {
 			if (arrestee.getAge() != null) {
 				arrestReportSegment.setAgeOfArresteeMin(arrestee.getAge().getAgeMin());
 				arrestReportSegment.setAgeOfArresteeMax(arrestee.getAge().getAgeMax());
+				arrestReportSegment.setAgeNumArrestee(arrestee.getAge().getAverage());
 				arrestReportSegment.setNonNumericAge(arrestee.getAge().getNonNumericAge());
 			}
 	
