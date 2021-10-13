@@ -22,7 +22,6 @@ Drop schema if exists search_nibrs_staging;
 CREATE schema search_nibrs_staging;
 use search_nibrs_staging;
 
-
 CREATE TABLE Owner (
                 OwnerId INT AUTO_INCREMENT NOT NULL,
                 FederationId VARCHAR(100) NOT NULL,
@@ -442,6 +441,7 @@ CREATE TABLE ArrestReportSegment (
                 AgeOfArresteeMin INT,
                 AgeOfArresteeMax INT,
                 NonNumericAge VARCHAR(2),
+                AgeNumArrestee INT,
                 SexOfPersonTypeID INT NOT NULL,
                 RaceOfPersonTypeID INT NOT NULL,
                 EthnicityOfPersonTypeID INT NOT NULL,
@@ -450,7 +450,7 @@ CREATE TABLE ArrestReportSegment (
                 UCROffenseCodeTypeID INT NOT NULL,
                 SubmissionID INT,
                 OwnerId INT,
-                ReportTimestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+                ReportTimestamp DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
                 PRIMARY KEY (ArrestReportSegmentID)
 );
 
@@ -465,6 +465,7 @@ CREATE TABLE ArrestReportSegmentWasArmedWith (
 CREATE INDEX arrestreportsegment_idx
  ON ArrestReportSegment
  ( ORI, ArrestTransactionNumber, MonthOfTape, YearOfTape);
+
 
 CREATE TABLE AdministrativeSegment (
                 AdministrativeSegmentID INT AUTO_INCREMENT NOT NULL,
@@ -507,6 +508,7 @@ CREATE TABLE ArresteeSegment (
                 MultipleArresteeSegmentsIndicatorTypeID INT NOT NULL,
                 AgeOfArresteeMin INT,
                 AgeOfArresteeMax INT,
+                AgeNumArrestee INT,
                 NonNumericAge VARCHAR(2),
                 SexOfPersonTypeID INT NOT NULL,
                 RaceOfPersonTypeID INT NOT NULL,
@@ -534,6 +536,7 @@ CREATE TABLE OffenderSegment (
                 OffenderSequenceNumber INT,
                 AgeOfOffenderMin INT,
                 AgeOfOffenderMax INT,
+                AgeNumOffender INT,
                 NonNumericAge VARCHAR(2),
                 SexOfPersonTypeID INT NOT NULL,
                 RaceOfPersonTypeID INT NOT NULL,
@@ -553,6 +556,7 @@ CREATE TABLE VictimSegment (
                 OfficerOtherJurisdictionORI VARCHAR(9),
                 AgeOfVictimMin INT,
                 AgeOfVictimMax INT,
+                AgeNumVictim INT,
                 AgeNeonateIndicator INT NOT NULL,
                 AgeFirstWeekIndicator INT NOT NULL,
                 AgeFirstYearIndicator INT NOT NULL,
@@ -734,13 +738,13 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE ZeroReportingSegment ADD CONSTRAINT ownerid_zeroreportingsegment_fk
-FOREIGN KEY (OwnerId)
+FOREIGN KEY (OwnerInd)
 REFERENCES Owner (OwnerId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
 
 ALTER TABLE LEOKASegment ADD CONSTRAINT ownerid_leokasegment_fk
-FOREIGN KEY (OwnerId)
+FOREIGN KEY (OwnerInd)
 REFERENCES Owner (OwnerId)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION;
