@@ -104,6 +104,7 @@
   <Dimension name="PropertyDescription" caption="Property Type">
     <Hierarchy hasAll="true" allMemberName="All Property Types" name="PropertyDescription" caption="Property Type" primaryKey="PropertyDescriptionTypeID">
       <Table name="PropertyDescriptionType"/>
+      <Level name="PropertyDescriptionCategoryDescription" column="PropertyDescriptionCategoryDescription" caption="Property Type Category"/>
       <Level name="PropertyDescriptionDescription" column="StateDescription" caption="Property Type"/>
     </Hierarchy>
   </Dimension>
