@@ -124,10 +124,10 @@
         </nc:Item>
         <nc:Person s:id="PersonVictim-1">
             <nc:PersonAgeMeasure>
-                <nc:MeasureRangeValue>
+                <nc:MeasureIntegerRange>
                     <nc:RangeMaximumIntegerValue>22</nc:RangeMaximumIntegerValue>
                     <nc:RangeMinimumIntegerValue>20</nc:RangeMinimumIntegerValue>
-                </nc:MeasureRangeValue>
+                </nc:MeasureIntegerRange>
             </nc:PersonAgeMeasure>
             <j:PersonEthnicityCode>N</j:PersonEthnicityCode>
             <j:PersonRaceNDExCode>B</j:PersonRaceNDExCode>

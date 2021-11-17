@@ -306,8 +306,11 @@ public class XmlReportGenerator {
 		}
 		
 		Element incidentAugmentation = XmlUtils.appendChildElement(incidentElement, Namespace.CJIS, "IncidentAugmentation");
-		XmlUtils.appendElementAndValue(incidentAugmentation, Namespace.CJIS, "IncidentReportDateIndicator", 
-				administrativeSegment.getReportDateIndicator());
+		Boolean isReportDate = "R".equals(administrativeSegment.getReportDateIndicator()); 
+		if (BooleanUtils.isTrue(isReportDate)) { 
+			XmlUtils.appendElementAndValue(incidentAugmentation, Namespace.CJIS, "IncidentReportDateIndicator", 
+					Boolean.TRUE.toString());
+		}
 		Element jIncidentAugElement = XmlUtils.appendChildElement(incidentElement, Namespace.J, "IncidentAugmentation");
 		XmlUtils.appendElementAndValue(jIncidentAugElement, Namespace.J, "IncidentExceptionalClearanceCode", 
 				administrativeSegment.getClearedExceptionallyType().getNibrsCode());
@@ -640,7 +643,7 @@ public class XmlReportGenerator {
 		if ( ageMax == null || (ageMax != null && ageMin.equals(ageMax))) {
 			XmlUtils.appendElementAndValue(e, Namespace.NC, "MeasureIntegerValue", String.valueOf(ageMin));
 		} else {
-			e = XmlUtils.appendChildElement(e, Namespace.NC, "MeasureRangeValue");
+			e = XmlUtils.appendChildElement(e, Namespace.NC, "MeasureIntegerRange");
 			XmlUtils.appendElementAndValue(e, Namespace.NC, "RangeMaximumIntegerValue", String.valueOf(ageMax));
 			XmlUtils.appendElementAndValue(e, Namespace.NC, "RangeMinimumIntegerValue", String.valueOf(ageMin));
 		}
