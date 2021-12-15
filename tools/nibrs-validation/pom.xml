@@ -27,9 +27,16 @@
 	  <artifactId>nibrs-tools-aggregate</artifactId>
 	  <version>1.0.0</version>
 	</parent>
-  	<dependencyManagement>
+  <dependencyManagement>
 		<dependencies>
-			<dependency>
+      <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-bom</artifactId>
+          <version>2.16.0</version>
+          <type>pom</type>
+          <scope>import</scope>
+      </dependency>
+ 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
 				<version>2.0.5.RELEASE</version>
