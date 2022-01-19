@@ -55,7 +55,7 @@ public final class NIBRSAgeBuilder {
 					error.setValue(ageString);
 					error.setNIBRSErrorCode(NIBRSErrorCode.valueOf("_" + segmentTypeCode + "09"));
 				}
-				if (ageMin == 0) {
+				if (ageMin != null && ageMin == 0) {
 					error = new NIBRSError();
 					error.setValue(ageString);
 					error.setNIBRSErrorCode(NIBRSErrorCode.valueOf("_" + segmentTypeCode + "22"));
