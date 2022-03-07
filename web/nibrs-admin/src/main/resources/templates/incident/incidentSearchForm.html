@@ -85,6 +85,15 @@
               </select>
 				   </div>
          </div>
+         <div class="form-row">
+           <label class="col-4 col-xl-2 col-form-label font-weight-bold text-right">PCT Tool Time Stamp </label>
+           <div class="col-8 col-xl-3"><input type="text" th:field="*{reportTimestampStartDate}" class="date" width="250" placeholder="From" th:errorclass="is-invalid"/></div>
+           <label class="col-4 col-xl-1 col-form-label font-weight-bold text-right">To </label>
+           <div class="col-8 col-xl-3">
+              <input type="text" th:field="*{reportTimestampEndDate}" class="date" width="250" placeholder="To"/>
+           <div th:if="${#fields.hasErrors('reportTimestampStartDate')}" th:errors="*{reportTimestampStartDate}" class="invalid-feedback">PCT Tool Time Stamp error message</div>
+           </div>
+         </div>
          <div class="form-row mt-2">
             <div class="col-4 col-xl-2"></div>
             <div class="col-8 col-xl-3">
@@ -100,6 +109,12 @@
                uiLibrary: 'bootstrap4', size: 'small'
             });
             $('#incidentDateRangeEndDate').datepicker({
+               uiLibrary: 'bootstrap4', size: 'small'
+            });
+            $('#reportTimestampStartDate').datepicker({
+               uiLibrary: 'bootstrap4', size: 'small'
+            });
+            $('#reportTimestampEndDate').datepicker({
                uiLibrary: 'bootstrap4', size: 'small'
             });
             $(".chosen-select").chosen();  

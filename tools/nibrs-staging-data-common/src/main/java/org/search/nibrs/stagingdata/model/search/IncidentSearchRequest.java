@@ -38,6 +38,10 @@ public class IncidentSearchRequest implements Serializable {
 	private LocalDate incidentDateRangeStartDate; 
 	@DateTimeFormat(pattern = "MM/dd/yyyy")
 	private LocalDate incidentDateRangeEndDate; 
+	@DateTimeFormat(pattern = "MM/dd/yyyy")
+	private LocalDate reportTimestampStartDate; 
+	@DateTimeFormat(pattern = "MM/dd/yyyy")
+	private LocalDate reportTimestampEndDate; 
 	private Integer ucrOffenseCodeTypeId; 
 	private String offenseCode; 
 
@@ -94,6 +98,8 @@ public class IncidentSearchRequest implements Serializable {
 				&& (agencyIds == null || agencyIds.isEmpty())  
 				&& incidentDateRangeStartDate == null
 				&& incidentDateRangeEndDate == null
+				&& reportTimestampStartDate == null
+				&& reportTimestampEndDate == null
 				&& (ucrOffenseCodeTypeId == null || ucrOffenseCodeTypeId == 0) 
 				&& submissionMonth == null 
 				&& submissionYear == null 
@@ -203,6 +209,18 @@ public class IncidentSearchRequest implements Serializable {
 	}
 	public void setStateCode(String stateCode) {
 		this.stateCode = stateCode;
+	}
+	public LocalDate getReportTimestampStartDate() {
+		return reportTimestampStartDate;
+	}
+	public void setReportTimestampStartDate(LocalDate reportTimestampStartDate) {
+		this.reportTimestampStartDate = reportTimestampStartDate;
+	}
+	public LocalDate getReportTimestampEndDate() {
+		return reportTimestampEndDate;
+	}
+	public void setReportTimestampEndDate(LocalDate reportTimestampEndDate) {
+		this.reportTimestampEndDate = reportTimestampEndDate;
 	}
 	
 }
