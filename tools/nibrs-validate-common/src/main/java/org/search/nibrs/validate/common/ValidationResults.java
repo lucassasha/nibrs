@@ -23,11 +23,15 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.search.nibrs.common.NIBRSError;
 import org.search.nibrs.model.AbstractReport;
+import org.search.nibrs.model.GroupAIncidentReport;
+import org.search.nibrs.model.GroupBArrestReport;
 
 public class ValidationResults{
 
 	private final List<NIBRSError> errorList;
 	private List<AbstractReport> reportsWithoutErrors;
+	private List<GroupAIncidentReport> groupAIncidentReports = new ArrayList<>();
+	private List<GroupBArrestReport> groupBArrestReports = new ArrayList<>();
 	private Integer totalReportCount = 0;
 	private List<AbstractReport> reportWithAllowableErrors;
 
@@ -97,6 +101,22 @@ public class ValidationResults{
 
 	public void addToFailedToPersist(AbstractReport report) {
 		this.failedToPersist.add(report);
+	}
+
+	public List<GroupAIncidentReport> getGroupAIncidentReports() {
+		return groupAIncidentReports;
+	}
+
+	public void setGroupAIncidentReports(List<GroupAIncidentReport> groupAIncidentReports) {
+		this.groupAIncidentReports = groupAIncidentReports;
+	}
+
+	public List<GroupBArrestReport> getGroupBArrestReports() {
+		return groupBArrestReports;
+	}
+
+	public void setGroupBArrestReports(List<GroupBArrestReport> groupBArrestReports) {
+		this.groupBArrestReports = groupBArrestReports;
 	}
 
 }

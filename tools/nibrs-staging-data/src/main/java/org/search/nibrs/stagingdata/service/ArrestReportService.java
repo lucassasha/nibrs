@@ -95,7 +95,7 @@ import org.springframework.stereotype.Service;
 public class ArrestReportService {
 	private static final String BAD_DELETE_REQUEST = "The report action type should be 'D' and the arrest transaction number is required ";
 
-	private static final String BAD_SAVE_REQUEST = "The Group B Report is not persisted because it misses the arrestee info. ";
+	private static final String BAD_SAVE_REQUEST = "The Group B Report is not persisted or converted because it misses the arrestee info. ";
 
 	private static final Log log = LogFactory.getLog(ArrestReportService.class);
 
@@ -235,6 +235,13 @@ public class ArrestReportService {
 	
 	public Iterable<ArrestReportSegment> saveGroupBArrestReports(List<GroupBArrestReport> groupBArrestReports){
 		
+		List<ArrestReportSegment> arrestReportSegments = convertToArrestReportSegments(groupBArrestReports);
+		log.info("Persisting " + arrestReportSegments.size() + " Group B Arrest Reports." ); 
+		
+		return arrestReportSegmentRepository.saveAll(arrestReportSegments);
+	}
+
+	private List<ArrestReportSegment> convertToArrestReportSegments(List<GroupBArrestReport> groupBArrestReports) {
 		List<ArrestReportSegment> arrestReportSegments = new ArrayList<>(); 
 		
 		for(GroupBArrestReport groupBArrestReport : groupBArrestReports){
@@ -358,8 +365,7 @@ public class ArrestReportService {
 			
 			arrestReportSegments.add(arrestReportSegment);
 		}
-		
-		return arrestReportSegmentRepository.saveAll(arrestReportSegments);
+		return arrestReportSegments;
 	}
 
 	private void processArrestReportSegmentArmedWiths(ArrestReportSegment arrestReportSegment, ArresteeSegment arrestee) {

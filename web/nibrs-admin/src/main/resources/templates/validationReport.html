@@ -29,9 +29,9 @@
       </script>     
 		  <script th:inline="javascript">
         /*<![CDATA[*/
-          var context = [[@{/}]];
-          var persistReportTask = [[${persistReportTask}]]; 
-          var privateSummaryReportSite = [[${privateSummaryReportSite}]]; 
+          var context = /*[[@{/}]]*/ '';
+          var persistReportTask = /*[[${persistReportTask}]]*/ null; 
+          var privateSummaryReportSite = /*[[${privateSummaryReportSite}]]*/ false; 
         /*]]>*/
 
 			  $(function() {
@@ -106,7 +106,7 @@
 
                   // increment progress bar
                 xhr = $.get(context + 'files/uploadStatus', function(data, status) {
-              	  console.log("data.failedToProcess: " + data.failedToProcess);
+              	  /* console.log("data.failedToProcess: " + data.failedToProcess); */
                   if (status == 'success'){
                     $('#progress').css('width', data.progress + '%').attr('aria-valuenow', data.progress);
                     $('#progress').html('' + data.processedCount + ' out of ' + data.totalCount + ' are processed ');

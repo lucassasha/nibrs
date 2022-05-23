@@ -42,6 +42,8 @@ import org.search.nibrs.common.NIBRSError;
 import org.search.nibrs.common.NIBRSJsonError;
 import org.search.nibrs.importer.ReportListener;
 import org.search.nibrs.model.AbstractReport;
+import org.search.nibrs.model.GroupAIncidentReport;
+import org.search.nibrs.model.GroupBArrestReport;
 import org.search.nibrs.util.NibrsFileUtils;
 import org.search.nibrs.validate.common.SubmissionFileValidator;
 import org.search.nibrs.validate.common.ValidationResults;
@@ -273,7 +275,7 @@ public class UploadFileController {
 		if (!appProperties.getPrivateSummaryReportSite()) {
 			authUser = (AuthUser) model.get("authUser"); 
 		}
-		restService.persistValidReportsAsync(persistReportTask, validReports, authUser);
+		restService.persistValidReportsAsync(persistReportTask, validationResults, authUser);
 		
 		log.info("called the aync method"); 
 		return "Server processing the valid reports.";
@@ -306,6 +308,7 @@ public class UploadFileController {
 		validationResults.increaseTotalReportCount();
 		if (validationResults.getErrorList().isEmpty()){
 			validationResults.getReportsWithoutErrors().add(report);
+			allocateTheReport(validationResults, report);
 		}
 		else{
 			boolean isReportWithoutError = true; 
@@ -327,7 +330,18 @@ public class UploadFileController {
 			
 			if (isReportWithoutError) {
 				validationResults.getReportsWithoutErrors().add(report);
+				allocateTheReport(validationResults, report);
 			}
+		}
+	}
+
+
+	private void allocateTheReport(ValidationResults validationResults, AbstractReport report) {
+		if (report instanceof GroupAIncidentReport) {
+			validationResults.getGroupAIncidentReports().add((GroupAIncidentReport) report);
+		}
+		else if(report instanceof GroupBArrestReport) {
+			validationResults.getGroupBArrestReports().add((GroupBArrestReport) report);
 		}
 	}
 	

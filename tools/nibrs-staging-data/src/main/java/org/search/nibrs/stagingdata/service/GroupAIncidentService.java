@@ -233,6 +233,12 @@ public class GroupAIncidentService {
 	}
 	
 	public Iterable<AdministrativeSegment> saveGroupAIncidentReports(GroupAIncidentReport... groupAIncidentReports){
+		List<AdministrativeSegment> administrativeSegments = convertToAdministrativeSegments(groupAIncidentReports);
+		
+		return administrativeSegmentRepository.saveAll(administrativeSegments);
+	}
+
+	private List<AdministrativeSegment> convertToAdministrativeSegments(GroupAIncidentReport... groupAIncidentReports) {
 		List<AdministrativeSegment> administrativeSegments = new ArrayList<>();
 		
 		for (GroupAIncidentReport groupAIncidentReport: groupAIncidentReports){
@@ -322,8 +328,7 @@ public class GroupAIncidentService {
 			processVictims(administrativeSegment, groupAIncidentReport);
 			administrativeSegments.add(administrativeSegment);
 		}
-		
-		return administrativeSegmentRepository.saveAll(administrativeSegments);
+		return administrativeSegments;
 	}
 	private void processProperties(AdministrativeSegment administrativeSegment,
 			GroupAIncidentReport groupAIncidentReport) {
