@@ -83,7 +83,9 @@ import org.search.nibrs.stagingdata.repository.UcrOffenseCodeTypeRepository;
 import org.search.nibrs.stagingdata.repository.VictimOffenderRelationshipTypeRepository;
 import org.search.nibrs.stagingdata.repository.segment.ArrestReportSegmentRepository;
 import org.search.nibrs.stagingdata.repository.segment.ArrestReportSegmentRepositoryCustom;
+import org.search.nibrs.stagingdata.service.xml.XmlReportGenerator;
 import org.search.nibrs.stagingdata.util.DateUtils;
+import org.search.nibrs.util.CustomPair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -163,6 +165,8 @@ public class ArrestReportService {
 	ArrestReportSegmentRepositoryCustom arrestReportSegmentRepositoryCustom;
 	@Autowired
 	public CodeTableService codeTableService; 
+	@Autowired
+	public XmlReportGenerator xmlReportGenerator; 
 	
 	@Transactional
 	public ArrestReportSegment saveArrestReportSegment(ArrestReportSegment arrestReportSegment){
@@ -406,5 +410,14 @@ public class ArrestReportService {
 	@Transactional
 	public int deleteIncidentDeleteRequest(IncidentDeleteRequest incidentDeleteRequest) {
 		return arrestReportSegmentRepositoryCustom.deleteByIncidentDeleteRequest(incidentDeleteRequest);
+	}
+
+	public void convertAndWriteGroupBArrestReports(CustomPair<String, List<GroupBArrestReport>> groupBArrestReportsPair) {
+		List<ArrestReportSegment> arrestReportSegments = 
+				convertToArrestReportSegments(groupBArrestReportsPair.getValue());
+		for (ArrestReportSegment arrestReportSegment: arrestReportSegments) {
+			xmlReportGenerator.writeArrestReportSegmentToXml(arrestReportSegment, groupBArrestReportsPair.getKey());
+		}
+		
 	}
 }

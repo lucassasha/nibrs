@@ -61,7 +61,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@SessionAttributes({"showUserInfoDropdown", "validationResults", "persistReportTask", "authUser", "privateSummaryReportSite"})
+@SessionAttributes({"showUserInfoDropdown", "validationResults", "persistReportTask", "authUser", "privateSummaryReportSite", "validationToConvertResults","reportConversionProgress"})
 @RequestMapping("/files")
 public class UploadFileController {
 	private final Log log = LogFactory.getLog(this.getClass());

@@ -110,6 +110,7 @@ public class XmlReportGenerator {
 	public AgencyRepository agencyRepository; 
 	@Autowired
 	private AppProperties appProperties;
+	
 	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmssSSS");
 
 	public long countTheIncidents(SubmissionTrigger submissionTrigger) {
@@ -165,10 +166,15 @@ public class XmlReportGenerator {
 		log.info("Generating group A report for pkId " + administrativeSegmentId);
 		AdministrativeSegment administrativeSegment = administrativeSegmentRepository.findByAdministrativeSegmentId(administrativeSegmentId);
 		
+		writeAdministrativeSegmentToXml(administrativeSegment, appProperties.getNibrsNiemDocumentFolder());
+	}
+
+	public void writeAdministrativeSegmentToXml(AdministrativeSegment administrativeSegment, String rootFolder) {
 		try {
 			Document document = this.createGroupAIncidentReport(administrativeSegment);
 			
-			String fileName = appProperties.getNibrsNiemDocumentFolder() + "/GroupAIncident" + administrativeSegment.getIncidentNumber() + "-" + LocalDateTime.now().format(formatter) + ".xml";
+			String fileName = rootFolder + "/GroupAIncident" + administrativeSegment.getIncidentNumber() + "-" + LocalDateTime.now().format(formatter) + ".xml";
+			log.info("Writing the XML report for GroupA Incident:\n " + administrativeSegment.getIncidentNumber() + " to " + fileName);
 			FileUtils.writeStringToFile(new File(fileName), XmlUtils.nodeToString(document), "UTF-8");
 		}
 		catch (Exception e) {
@@ -187,17 +193,21 @@ public class XmlReportGenerator {
 			
 			ArrestReportSegment arrestReportSegment = arrestReportSegmentRepository.findByArrestReportSegmentId(arrestReportSegmentId);
 			
-			try {
-				Document document = createGroupBArrestReport(arrestReportSegment);
-				
-				String fileName = appProperties.getNibrsNiemDocumentFolder() + "/GroupBArrestReport" + arrestReportSegment.getArrestTransactionNumber() + "-" + LocalDateTime.now().format(formatter) + ".xml";
-				
-				FileUtils.writeStringToFile(new File(fileName), XmlUtils.nodeToString(document), "UTF-8");			
-			}
-			catch (Exception e) {
-				log.error("Failed to generate and write the report for Group B Arrest Report:\n " + arrestReportSegment);
-				log.error(e.getMessage());
-			}
+			writeArrestReportSegmentToXml(arrestReportSegment, appProperties.getNibrsNiemDocumentFolder());
+		}
+	}
+
+	public void writeArrestReportSegmentToXml(ArrestReportSegment arrestReportSegment, String rootFolder) {
+		try {
+			Document document = createGroupBArrestReport(arrestReportSegment);
+			
+			String fileName = rootFolder + "/GroupBArrestReport" + arrestReportSegment.getArrestTransactionNumber() + "-" + LocalDateTime.now().format(formatter) + ".xml";
+			
+			FileUtils.writeStringToFile(new File(fileName), XmlUtils.nodeToString(document), "UTF-8");			
+		}
+		catch (Exception e) {
+			log.error("Failed to generate and write the report for Group B Arrest Report:\n " + arrestReportSegment);
+			log.error(e.getMessage());
 		}
 	}
 

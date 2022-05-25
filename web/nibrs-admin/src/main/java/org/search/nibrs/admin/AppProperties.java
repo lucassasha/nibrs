@@ -27,6 +27,7 @@ public class AppProperties {
 
 	private Boolean allowSubmitToFbi = true;
 	private Boolean privateSummaryReportSite=false; 
+	private String xmlDocumentDownloadRootFolder = "/tmp/nibrs/xmlDownload";
 	
 	private Boolean securityEnabled = false;
 	private Boolean allowAccessWithoutSamlToken = false;
@@ -169,6 +170,14 @@ public class AppProperties {
 
 	public Map<String, String> getAboutLinksMapping() {
 		return aboutLinksMapping;
+	}
+
+	public String getXmlDocumentDownloadRootFolder() {
+		return xmlDocumentDownloadRootFolder;
+	}
+
+	public void setXmlDocumentDownloadRootFolder(String xmlDocumentDownloadRootFolder) {
+		this.xmlDocumentDownloadRootFolder = xmlDocumentDownloadRootFolder;
 	}
 
 }

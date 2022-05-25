@@ -113,7 +113,9 @@ import org.search.nibrs.stagingdata.repository.VictimOffenderRelationshipTypeRep
 import org.search.nibrs.stagingdata.repository.segment.AdministrativeSegmentRepository;
 import org.search.nibrs.stagingdata.repository.segment.AdministrativeSegmentRepositoryCustom;
 import org.search.nibrs.stagingdata.repository.segment.OffenseSegmentRepository;
+import org.search.nibrs.stagingdata.service.xml.XmlReportGenerator;
 import org.search.nibrs.stagingdata.util.DateUtils;
+import org.search.nibrs.util.CustomPair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -194,6 +196,9 @@ public class GroupAIncidentService {
 	@Autowired
 	public CodeTableService codeTableService; 
 	
+	@Autowired
+	public XmlReportGenerator xmlReportGenerator; 
+	
 	@Transactional
 	public AdministrativeSegment saveAdministrativeSegment(AdministrativeSegment administrativeSegment){
 		return administrativeSegmentRepository.save(administrativeSegment);
@@ -248,7 +253,7 @@ public class GroupAIncidentService {
 				Owner owner = new Owner(groupAIncidentReport.getOwnerId());
 				administrativeSegment.setOwner(owner);
 			}
-			log.info("Persisting GroupAIncident: " + groupAIncidentReport.getIncidentNumber());
+			log.info("Converting GroupAIncident to DB model: " + groupAIncidentReport.getIncidentNumber());
 			
 			
 			Optional<Integer> monthOfTape = Optional.ofNullable(groupAIncidentReport.getMonthOfTape());
@@ -869,5 +874,17 @@ public class GroupAIncidentService {
 			return administrativeSegmentRepositoryCustom.deleteByIds(administrativeSegmentIds);
 		}
 	}
+
+	public void convertAndWriteGroupAIncidentReports(CustomPair<String, List<GroupAIncidentReport>> groupAIncidentReportsPair) {
+		GroupAIncidentReport[] groupAIncidentReports = new GroupAIncidentReport[groupAIncidentReportsPair.getValue().size()];
+				
+		List<AdministrativeSegment> administrativeSegments = 
+				convertToAdministrativeSegments(groupAIncidentReportsPair.getValue().toArray(groupAIncidentReports));
+		for (AdministrativeSegment administrativeSegment: administrativeSegments) {
+			administrativeSegment.setAdministrativeSegmentId(0);
+			xmlReportGenerator.writeAdministrativeSegmentToXml(administrativeSegment, groupAIncidentReportsPair.getKey());
+		}
+	}
+
 
 }

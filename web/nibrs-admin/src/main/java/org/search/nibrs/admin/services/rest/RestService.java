@@ -15,11 +15,15 @@
  */
 package org.search.nibrs.admin.services.rest;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.logging.Log;
@@ -40,6 +44,7 @@ import org.search.nibrs.stagingdata.model.search.PrecertErrorSearchRequest;
 import org.search.nibrs.stagingdata.model.search.SearchResult;
 import org.search.nibrs.stagingdata.model.segment.AdministrativeSegment;
 import org.search.nibrs.stagingdata.model.segment.ArrestReportSegment;
+import org.search.nibrs.util.CustomPair;
 import org.search.nibrs.validate.common.ValidationResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -57,6 +62,11 @@ public class RestService{
 	private final Log log = LogFactory.getLog(this.getClass());
 
 	private final WebClient webClient;
+	
+	private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmssSSS");
+
+	@Resource
+	AppProperties appProperties;
 
 	@Autowired
 	public RestService(WebClient.Builder webClientBuilder, AppProperties appProperties) {
@@ -362,33 +372,112 @@ public class RestService{
 		log.info("Execute conversion method asynchronously. "
 			      + Thread.currentThread().getName());
 		reportConversionProgress.setStarted(true);
+		
+		String outputFolder = getRootFolderPath(authUser);
+
 		for(List<GroupAIncidentReport> groupAIncidentReports: ListUtils.partition(validationToConvertResults.getGroupAIncidentReports(), 50)){
-			if (authUser != null) {
-				groupAIncidentReports.forEach(report-> report.setOwnerId(authUser.getUserId()));
-			}
-			this.convertGroupAReport(groupAIncidentReports, reportConversionProgress);
+			CustomPair<String, List<GroupAIncidentReport>> groupAIncidentsToConvert = 
+					new CustomPair<String, List<GroupAIncidentReport>>(outputFolder, groupAIncidentReports); 
+			this.convertGroupAReport(groupAIncidentsToConvert, reportConversionProgress);
 		}
 		
-		List<List<GroupBArrestReport>> groupBArrestReportsSublists = ListUtils.partition(validationToConvertResults.getGroupBArrestReports(), 100); 
+		List<List<GroupBArrestReport>> groupBArrestReportsSublists = ListUtils.partition(validationToConvertResults.getGroupBArrestReports(), 100);
 		for(List<GroupBArrestReport> groupBArrestReports: groupBArrestReportsSublists){
-			if (authUser != null) {
-				groupBArrestReports.forEach(report-> report.setOwnerId(authUser.getUserId()));
-			}
-			this.convertGroupBReport(groupBArrestReports, reportConversionProgress);
+			CustomPair<String, List<GroupBArrestReport>> groupBArrestsToConvert = 
+					new CustomPair<String, List<GroupBArrestReport>>(outputFolder, groupBArrestReports); 
+			this.convertGroupBReport(groupBArrestsToConvert, reportConversionProgress);
 		}
 		
 		
 	}
 
-	private void convertGroupBReport(List<GroupBArrestReport> groupBArrestReports,
+	private String getRootFolderPath(AuthUser authUser) {
+		StringBuilder sb = new StringBuilder(200);
+		sb.append(appProperties.getXmlDocumentDownloadRootFolder()); 
+		if (authUser != null) {
+			sb.append("/");
+			sb.append(authUser.getUsername()); 
+			sb.append("-");
+		}
+		sb.append(LocalDateTime.now().format(formatter));
+		
+		String outputFolder = sb.toString();
+		return outputFolder;
+	}
+
+	private void convertGroupBReport(CustomPair<String, List<GroupBArrestReport>> groupBArrestsToConvert,
 			ReportProcessProgress reportConversionProgress) {
-		// TODO Auto-generated method stub
+		
+		List<GroupBArrestReport> groupBArrestReports = groupBArrestsToConvert.getValue();
+		try{
+			webClient.post().uri("/arrestReportsToXml")
+			.body(BodyInserters.fromValue(groupBArrestsToConvert))
+			.retrieve()
+			.bodyToMono(String.class)
+			.block();
+			
+			reportConversionProgress.increaseProcessedCount(groupBArrestReports.size());
+			log.info("Progress: " + reportConversionProgress.getProcessedCount() + "/" + reportConversionProgress.getTotalCount());
+		}
+		catch(ResourceAccessException rae){
+			List<String> identifiers = groupBArrestReports.stream()
+					.map(GroupBArrestReport::getIdentifier)
+					.collect(Collectors.toList());
+			log.error("Failed to connect to the rest service to process the Group B Arrest Reports " + 
+					" with Identifiers " + identifiers);
+			reportConversionProgress.setAborted(true);
+			throw rae;
+		}
+		catch(Exception e){
+			reportConversionProgress.increaseProcessedCount(groupBArrestReports.size());
+			groupBArrestReports.stream()
+				.map(GroupBArrestReport::getUniqueReportDescription)
+				.forEach(item->reportConversionProgress.addFailedToProcess(item));
+			List<String> identifiers = groupBArrestReports.stream()
+					.map(GroupBArrestReport::getIdentifier)
+					.collect(Collectors.toList());
+			log.warn("Failed to persist incident " + identifiers);
+			log.error(e);
+			log.info("Progress: " + reportConversionProgress.getProcessedCount() + "/" + reportConversionProgress.getTotalCount());
+		}
 		
 	}
 
-	private void convertGroupAReport(List<GroupAIncidentReport> groupAIncidentReports,
+	private void convertGroupAReport(CustomPair<String, List<GroupAIncidentReport>> groupAToConvertPair,
 			ReportProcessProgress reportConversionProgress) {
-		// TODO Auto-generated method stub
+		List<GroupAIncidentReport> groupAIncidentReports = groupAToConvertPair.getValue(); 
+		try {
+			log.info("About to post for group A incident report " + groupAIncidentReports.size());
+			webClient.post().uri("/groupAIncidentReportsToXml")
+				.body(BodyInserters.fromValue(groupAToConvertPair))
+				.retrieve()
+				.bodyToMono(String.class)
+				.block();
+			reportConversionProgress.increaseProcessedCount(groupAIncidentReports.size());
+			log.info("Progress: " + reportConversionProgress.getProcessedCount() + "/" + reportConversionProgress.getTotalCount());
+		}
+		catch(ResourceAccessException rae){
+			List<String> identifiers = groupAIncidentReports.stream()
+					.map(GroupAIncidentReport::getIncidentNumber)
+					.collect(Collectors.toList());
+			log.error("Failed to connect to the rest service to process the group A reports " + 
+					"  Identifiers " + identifiers);
+			reportConversionProgress.setAborted(true);
+			throw rae;
+		}
+		catch(Exception e){
+			reportConversionProgress.increaseProcessedCount(groupAIncidentReports.size());
+			
+			groupAIncidentReports.stream()
+				.map(GroupAIncidentReport::getUniqueReportDescription)
+				.forEach(item->reportConversionProgress.addFailedToProcess(item));
+			List<String> identifiers = groupAIncidentReports.stream()
+					.map(GroupAIncidentReport::getIncidentNumber)
+					.collect(Collectors.toList());
+			log.warn("Failed to persist incident " + identifiers);
+			log.error(e);
+			log.info("Progress: " + reportConversionProgress.getProcessedCount() + "/" + reportConversionProgress.getTotalCount());
+		}
 		
 	}
 	
