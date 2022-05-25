@@ -26,7 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.search.nibrs.admin.AppProperties;
 import org.search.nibrs.admin.security.AuthUser;
-import org.search.nibrs.admin.uploadfile.PersistReportTask;
+import org.search.nibrs.admin.uploadfile.ReportProcessProgress;
 import org.search.nibrs.common.NIBRSError;
 import org.search.nibrs.model.GroupAIncidentReport;
 import org.search.nibrs.model.GroupBArrestReport;
@@ -144,7 +144,7 @@ public class RestService{
 				.block();
 	}
 	
-	public void persistGroupBReport(List<GroupBArrestReport> groupBArrestReports, PersistReportTask persistReportTask) {
+	public void persistGroupBReport(List<GroupBArrestReport> groupBArrestReports, ReportProcessProgress persistReportTask) {
 		try{
 			webClient.post().uri("/arrestReports")
 			.body(BodyInserters.fromValue(groupBArrestReports))
@@ -178,7 +178,7 @@ public class RestService{
 		}
 	}
 	
-	public void persistGroupAReport(List<GroupAIncidentReport> groupAIncidentReports, PersistReportTask persistReportTask) {
+	public void persistGroupAReport(List<GroupAIncidentReport> groupAIncidentReports, ReportProcessProgress persistReportTask) {
 		
 		try {
 			log.info("About to post for group A incident report " + groupAIncidentReports.size());
@@ -265,7 +265,7 @@ public class RestService{
 	}
 	
 	@Async
-	public void persistValidReportsAsync(PersistReportTask persistReportTask, ValidationResults validationResults, AuthUser authUser) {
+	public void persistValidReportsAsync(ReportProcessProgress persistReportTask, ValidationResults validationResults, AuthUser authUser) {
 		log.info("Execute method asynchronously. "
 			      + Thread.currentThread().getName());
 		persistReportTask.setStarted(true);
@@ -355,6 +355,41 @@ public class RestService{
 				.retrieve()
 				.bodyToMono( new ParameterizedTypeReference<List<Integer>>() {})
 				.block();
+	}
+
+	public void convertValidReportsAsync(ReportProcessProgress reportConversionProgress,
+			ValidationResults validationToConvertResults, AuthUser authUser) {
+		log.info("Execute conversion method asynchronously. "
+			      + Thread.currentThread().getName());
+		reportConversionProgress.setStarted(true);
+		for(List<GroupAIncidentReport> groupAIncidentReports: ListUtils.partition(validationToConvertResults.getGroupAIncidentReports(), 50)){
+			if (authUser != null) {
+				groupAIncidentReports.forEach(report-> report.setOwnerId(authUser.getUserId()));
+			}
+			this.convertGroupAReport(groupAIncidentReports, reportConversionProgress);
+		}
+		
+		List<List<GroupBArrestReport>> groupBArrestReportsSublists = ListUtils.partition(validationToConvertResults.getGroupBArrestReports(), 100); 
+		for(List<GroupBArrestReport> groupBArrestReports: groupBArrestReportsSublists){
+			if (authUser != null) {
+				groupBArrestReports.forEach(report-> report.setOwnerId(authUser.getUserId()));
+			}
+			this.convertGroupBReport(groupBArrestReports, reportConversionProgress);
+		}
+		
+		
+	}
+
+	private void convertGroupBReport(List<GroupBArrestReport> groupBArrestReports,
+			ReportProcessProgress reportConversionProgress) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void convertGroupAReport(List<GroupAIncidentReport> groupAIncidentReports,
+			ReportProcessProgress reportConversionProgress) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

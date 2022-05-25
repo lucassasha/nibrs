@@ -15,6 +15,7 @@
  */
 package org.search.nibrs.validate.common;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +38,8 @@ public class ValidationResults{
 
 	private Integer persistedCount = 0; 
 	private List<AbstractReport> failedToPersist = new ArrayList<>();
+	private LocalTime validateTimestamp;
+	private String owner; 
 	
 	public ValidationResults() {
 		super();
@@ -117,6 +120,22 @@ public class ValidationResults{
 
 	public void setGroupBArrestReports(List<GroupBArrestReport> groupBArrestReports) {
 		this.groupBArrestReports = groupBArrestReports;
+	}
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public LocalTime getValidateTimestamp() {
+		return validateTimestamp;
+	}
+
+	public void setValidateTimestamp(LocalTime validateTimestamp) {
+		this.validateTimestamp = validateTimestamp;
 	}
 
 }

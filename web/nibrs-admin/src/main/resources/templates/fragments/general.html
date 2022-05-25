@@ -69,6 +69,9 @@
 	            <li class="nav-item" th:if="${allowSubmitToFbi && !agencyMapping.empty}">
 	              <a class="nav-link" href="#" id="submitToFbi">Submit to FBI</a>
 	            </li>
+              <li class="nav-item">
+                <a class="nav-link uploadFlatFileToConvert" href="#" id="upload">Convert to XML</a>
+              </li>
 	            <li th:each="instance : ${externalLinksMapping}" class="nav-item">
 							   <a class="nav-link external-link" th:href="${instance.value}" th:text="${instance.key}" target="_blank"></a>
 							</li>
@@ -134,10 +137,10 @@
 	    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script> 
 			<script th:inline="javascript">
 				/*<![CDATA[*/
-					var context = [[@{/}]];
-					var securityEnabled = [[${securityEnabled}]]; 
-					var inactivityTimeout = [[${inactivityTimeout}]]; 
-					var inactivityTimeoutInSeconds = [[${inactivityTimeoutInSeconds}]]; 
+					var context = /*[[@{/}]]*/ '';
+					var securityEnabled = /*[[${securityEnabled}]]*/ true; 
+					var inactivityTimeout = /*[[${inactivityTimeout}]]*/ true; 
+					var inactivityTimeoutInSeconds = /*[[${inactivityTimeoutInSeconds}]]*/ 1800; 
 				/*]]>*/
 				var idleTime;
 				var table;
@@ -180,6 +183,15 @@
 						$(this).parent().toggleClass('show');
 						
 						xhr = $.get(context + 'files/upload', function(data) {
+						   $('#portalContent').html(data); 
+						 }).fail(ojbc.displayFailMessage);
+						return false; 
+	        });
+			    	  
+					$('body').on('click', 'a.uploadFlatFileToConvert', function() {   
+						$(this).parent().toggleClass('show');
+						
+						xhr = $.get(context + 'files/uploadToConvertForm', function(data) {
 						   $('#portalContent').html(data); 
 						 }).fail(ojbc.displayFailMessage);
 						return false; 

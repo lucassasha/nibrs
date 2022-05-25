@@ -45,18 +45,18 @@
 	 		<div>
 				<div id="errorMsg"></div>
         <div align="center">
-            <h6><strong>Choose or drag and drop your file to get started</strong></h6>
+            <h6><strong>Choose or drag and drop your flat file to get started</strong></h6>
             <p class="m-3">
               You may validate multiple NIBRS files at once: <br>
-              legacy flat file with multiple records, XML file with a single record, and a compressed(zip) file with multiple XML files. 
+              legacy flat file with multiple records, and a compressed(zip) file with multiple files. 
             </p>
         </div>
 				
-				<form method="POST" enctype="multipart/form-data" th:action="@{/files/upload}" class="box m-5">
+				<form method="POST" enctype="multipart/form-data" th:action="@{/files/uploadToConvert}" class="box m-5">
 				  	<div id="uploads"></div>
 				 	<div class="dropzone" id="dropzone">
 						<div id="loadingFileAjaxPane" ></div>
-				 		<input type="file" name="file" id="file" class="inputfile" form="fileform" accept="application/zip, text/plain, application/octet-stream, text/xml"/>  
+				 		<input type="file" name="file" id="file" class="inputfile" form="fileform" accept="application/zip, text/plain, application/octet-stream"/>  
 				 		<span><label for="file" class="inputfileLabel"><Strong>Choose</Strong></label><strong> or drag and drop file here.</strong> </span>
 			 		</div>		
 				</form>
