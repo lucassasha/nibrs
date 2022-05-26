@@ -374,6 +374,7 @@ public class RestService{
 		reportConversionProgress.setStarted(true);
 		
 		String outputFolder = getRootFolderPath(authUser);
+		reportConversionProgress.setOutputFolder(outputFolder);
 
 		for(List<GroupAIncidentReport> groupAIncidentReports: ListUtils.partition(validationToConvertResults.getGroupAIncidentReports(), 50)){
 			CustomPair<String, List<GroupAIncidentReport>> groupAIncidentsToConvert = 
@@ -394,8 +395,8 @@ public class RestService{
 	private String getRootFolderPath(AuthUser authUser) {
 		StringBuilder sb = new StringBuilder(200);
 		sb.append(appProperties.getXmlDocumentDownloadRootFolder()); 
+		sb.append("/");
 		if (authUser != null) {
-			sb.append("/");
 			sb.append(authUser.getUsername()); 
 			sb.append("-");
 		}

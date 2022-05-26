@@ -29,6 +29,7 @@ public class ReportProcessProgress{
 	private List<String> failedToProcess = new ArrayList<>(); 
 	private boolean aborted = false;
 	private boolean started = false; 
+	private String outputFolder;
 	
 	public ReportProcessProgress() {
 		super();
@@ -99,5 +100,13 @@ public class ReportProcessProgress{
 
 	public void setStarted(boolean started) {
 		this.started = started;
+	}
+
+	public String getOutputFolder() {
+		return outputFolder;
+	}
+
+	public void setOutputFolder(String outputFolder) {
+		this.outputFolder = outputFolder;
 	}
 }

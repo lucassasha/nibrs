@@ -30,6 +30,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.lang.StringUtils;
@@ -71,7 +72,10 @@ public class UploadFileController {
 	@Resource
 	RestService restService;
 
-	@Autowired
+    @Autowired
+    private DownloadService downloadService;
+
+    @Autowired
 	SubmissionValidator submissionValidator;
 	
 	@Autowired
@@ -345,6 +349,13 @@ public class UploadFileController {
 		return persistReportTask;
 	}
 	
+	@GetMapping("/conversionStatus")
+	public @ResponseBody ReportProcessProgress getConversionStatus(Map<String, Object> model) {
+		
+		ReportProcessProgress reportConversionProgress = (ReportProcessProgress) model.get("reportConversionProgress");
+		return reportConversionProgress;
+	}
+	
 	private void logCountsOfReports(List<AbstractReport> abstractReports) {
 		Set<String> incidentNumbers = new HashSet<>();
 		abstractReports.forEach(item->incidentNumbers.add(item.getIdentifier()));
@@ -391,6 +402,13 @@ public class UploadFileController {
 			validationResults.getGroupBArrestReports().add((GroupBArrestReport) report);
 		}
 	}
+	
+    @GetMapping("/downloadZipFile")
+    public void downloadZipFile(HttpServletResponse response, Map<String, Object> model) {
+    	ReportProcessProgress reportConversionProgress = (ReportProcessProgress) model.get("reportConversionProgress");
+    	
+        downloadService.downloadZipFolder(response, reportConversionProgress.getOutputFolder());
+    }
 	
 }
 
