@@ -238,12 +238,12 @@ public class GroupAIncidentService {
 	}
 	
 	public Iterable<AdministrativeSegment> saveGroupAIncidentReports(GroupAIncidentReport... groupAIncidentReports){
-		List<AdministrativeSegment> administrativeSegments = convertToAdministrativeSegments(groupAIncidentReports);
+		List<AdministrativeSegment> administrativeSegments = getAdministrativeSegments(true,groupAIncidentReports);
 		
 		return administrativeSegmentRepository.saveAll(administrativeSegments);
 	}
 
-	private List<AdministrativeSegment> convertToAdministrativeSegments(GroupAIncidentReport... groupAIncidentReports) {
+	private List<AdministrativeSegment> getAdministrativeSegments(Boolean isToPersist, GroupAIncidentReport... groupAIncidentReports) {
 		List<AdministrativeSegment> administrativeSegments = new ArrayList<>();
 		
 		for (GroupAIncidentReport groupAIncidentReport: groupAIncidentReports){
@@ -268,7 +268,8 @@ public class GroupAIncidentService {
 			administrativeSegment.setOri(groupAIncidentReport.getOri());
 			administrativeSegment.setIncidentNumber(groupAIncidentReport.getIncidentNumber());
 			
-			if (groupAIncidentReport.getYearOfTape() != null && groupAIncidentReport.getMonthOfTape() != null) {
+			if (groupAIncidentReport.getYearOfTape() != null && groupAIncidentReport.getMonthOfTape() != null
+					&& isToPersist) {
 				boolean havingNewerSubmission = administrativeSegmentRepository.existsByIncidentNumberAndOriAndSubmissionDateAndOwnerId
 						(administrativeSegment.getIncidentNumber(), administrativeSegment.getOri(), 
 								DateUtils.getStartDate(groupAIncidentReport.getYearOfTape(), 
@@ -879,7 +880,7 @@ public class GroupAIncidentService {
 		GroupAIncidentReport[] groupAIncidentReports = new GroupAIncidentReport[groupAIncidentReportsPair.getValue().size()];
 				
 		List<AdministrativeSegment> administrativeSegments = 
-				convertToAdministrativeSegments(groupAIncidentReportsPair.getValue().toArray(groupAIncidentReports));
+				getAdministrativeSegments(false, groupAIncidentReportsPair.getValue().toArray(groupAIncidentReports));
 		for (AdministrativeSegment administrativeSegment: administrativeSegments) {
 			administrativeSegment.setAdministrativeSegmentId(0);
 			xmlReportGenerator.writeAdministrativeSegmentToXml(administrativeSegment, groupAIncidentReportsPair.getKey());

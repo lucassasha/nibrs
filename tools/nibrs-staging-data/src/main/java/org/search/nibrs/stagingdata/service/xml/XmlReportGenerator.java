@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -464,13 +465,13 @@ public class XmlReportGenerator {
 		
 		List<PropertySegment> properties = administrativeSegment.getPropertySegments()
 				.stream()
-				.sorted((h1, h2) -> h1.getPropertySegmentId().compareTo(h2.getPropertySegmentId()))
+				.sorted(Comparator.comparing(PropertySegment::getPropertySegmentId, Comparator.nullsFirst(Comparator.naturalOrder())))
 				.collect(Collectors.toList()); 
 		for (PropertySegment property : properties) {
 			if (("NONE".equalsIgnoreCase(property.getTypePropertyLossEtcType().getNibrsDescription()) 
 					&& (property.getSuspectedDrugTypes() == null || property.getSuspectedDrugTypes().size() == 0))|| 
 					"UNKNOWN".equalsIgnoreCase(property.getTypePropertyLossEtcType().getNibrsDescription())){
-			
+				
 				Element itemElement = XmlUtils.appendChildElement(reportElement, Namespace.NC, "Item");
 				Element itemStatus = XmlUtils.appendChildElement(itemElement, Namespace.NC, "ItemStatus");
 				XmlUtils.appendElementAndValue(itemStatus, Namespace.CJIS, "ItemStatusCode", 
@@ -489,7 +490,7 @@ public class XmlReportGenerator {
 					Element itemElement = XmlUtils.appendChildElement(reportElement, Namespace.NC, "Item");
 					
 					addItemStatus(property, itemElement);
-						
+					
 					addItemValueAndAmount(propertyType, itemElement);
 					
 					XmlUtils.appendElementAndValue(itemElement, Namespace.J, "ItemCategoryNIBRSPropertyCategoryCode", nibrsCode);
