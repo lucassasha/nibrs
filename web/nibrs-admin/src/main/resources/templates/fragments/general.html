@@ -134,10 +134,10 @@
 	    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script> 
 			<script th:inline="javascript">
 				/*<![CDATA[*/
-					var context = [[@{/}]];
-					var securityEnabled = [[${securityEnabled}]]; 
-					var inactivityTimeout = [[${inactivityTimeout}]]; 
-					var inactivityTimeoutInSeconds = [[${inactivityTimeoutInSeconds}]]; 
+					var context = /*[[@{/}]]*/ '';
+					var securityEnabled = /*[[${securityEnabled}]]*/ true; 
+					var inactivityTimeout = /*[[${inactivityTimeout}]]*/ true; 
+					var inactivityTimeoutInSeconds = /*[[${inactivityTimeoutInSeconds}]]*/ 1800; 
 				/*]]>*/
 				var idleTime;
 				var table;
