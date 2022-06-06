@@ -481,7 +481,7 @@ public class XmlReportGenerator {
 			
 			List<PropertyType> sortedPropertyTypes = property.getPropertyTypes()
 					.stream()
-					.sorted((h1, h2) -> h1.getPropertyTypeId().compareTo(h2.getPropertyTypeId()))
+					.sorted(Comparator.comparing(PropertyType::getPropertyTypeId, Comparator.nullsFirst(Comparator.naturalOrder())))
 					.collect(Collectors.toList()); 
 			
 			for (PropertyType propertyType : sortedPropertyTypes) {
@@ -542,12 +542,12 @@ public class XmlReportGenerator {
 		}
 		List<PropertySegment> properties = administrativeSegment.getPropertySegments()
 				.stream()
-				.sorted((h1, h2) -> h1.getPropertySegmentId().compareTo(h2.getPropertySegmentId()))
+				.sorted(Comparator.comparing(PropertySegment::getPropertySegmentId, Comparator.nullsFirst(Comparator.naturalOrder())))
 				.collect(Collectors.toList()); 
 		for (PropertySegment property : properties) {
 			List<PropertyType> sortedPropertyTypes = property.getPropertyTypes()
 					.stream()
-					.sorted((h1, h2) -> h1.getPropertyTypeId().compareTo(h2.getPropertyTypeId()))
+					.sorted(Comparator.comparing(PropertyType::getPropertyTypeId, Comparator.nullsFirst(Comparator.naturalOrder())))
 					.collect(Collectors.toList()); 
 			if ("NONE".equalsIgnoreCase(property.getTypePropertyLossEtcType().getNibrsDescription()) 
 					&& property.getSuspectedDrugTypes() != null && property.getSuspectedDrugTypes().size()>0){

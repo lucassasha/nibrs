@@ -239,13 +239,13 @@ public class ArrestReportService {
 	
 	public Iterable<ArrestReportSegment> saveGroupBArrestReports(List<GroupBArrestReport> groupBArrestReports){
 		
-		List<ArrestReportSegment> arrestReportSegments = convertToArrestReportSegments(groupBArrestReports);
+		List<ArrestReportSegment> arrestReportSegments = getArrestReportSegments(true, groupBArrestReports);
 		log.info("Persisting " + arrestReportSegments.size() + " Group B Arrest Reports." ); 
 		
 		return arrestReportSegmentRepository.saveAll(arrestReportSegments);
 	}
 
-	private List<ArrestReportSegment> convertToArrestReportSegments(List<GroupBArrestReport> groupBArrestReports) {
+	private List<ArrestReportSegment> getArrestReportSegments(Boolean isToPersist, List<GroupBArrestReport> groupBArrestReports) {
 		List<ArrestReportSegment> arrestReportSegments = new ArrayList<>(); 
 		
 		for(GroupBArrestReport groupBArrestReport : groupBArrestReports){
@@ -267,7 +267,7 @@ public class ArrestReportService {
 			arrestReportSegment.setAgency(agencyRepository.findFirstByAgencyOri(groupBArrestReport.getOri()));
 			arrestReportSegment.setOri(groupBArrestReport.getOri());
 			
-			if (groupBArrestReport.getYearOfTape() != null && groupBArrestReport.getMonthOfTape() != null) {
+			if (groupBArrestReport.getYearOfTape() != null && groupBArrestReport.getMonthOfTape() != null && isToPersist) {
 				boolean havingNewerSubmission = arrestReportSegmentRepository.existsByArrestTransactionNumberAndOriAndSubmissionDateAndOwnerId
 						(arrestReportSegment.getArrestTransactionNumber(), arrestReportSegment.getOri(), 
 								DateUtils.getStartDate(groupBArrestReport.getYearOfTape(), 
@@ -414,8 +414,9 @@ public class ArrestReportService {
 
 	public void convertAndWriteGroupBArrestReports(CustomPair<String, List<GroupBArrestReport>> groupBArrestReportsPair) {
 		List<ArrestReportSegment> arrestReportSegments = 
-				convertToArrestReportSegments(groupBArrestReportsPair.getValue());
+				getArrestReportSegments(false, groupBArrestReportsPair.getValue());
 		for (ArrestReportSegment arrestReportSegment: arrestReportSegments) {
+			arrestReportSegment.setArrestReportSegmentId(LocalDateTime.now().getNano()); 
 			xmlReportGenerator.writeArrestReportSegmentToXml(arrestReportSegment, groupBArrestReportsPair.getKey());
 		}
 		
