@@ -416,7 +416,7 @@ public class ArrestReportService {
 		List<ArrestReportSegment> arrestReportSegments = 
 				getArrestReportSegments(false, groupBArrestReportsPair.getValue());
 		for (ArrestReportSegment arrestReportSegment: arrestReportSegments) {
-			arrestReportSegment.setArrestReportSegmentId(LocalDateTime.now().getNano()); 
+			arrestReportSegment.setArrestReportSegmentId(222222); 
 			xmlReportGenerator.writeArrestReportSegmentToXml(arrestReportSegment, groupBArrestReportsPair.getKey());
 		}
 		

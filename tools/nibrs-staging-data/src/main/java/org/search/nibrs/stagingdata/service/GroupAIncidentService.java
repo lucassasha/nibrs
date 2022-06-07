@@ -876,13 +876,13 @@ public class GroupAIncidentService {
 		}
 	}
 
-	public void convertAndWriteGroupAIncidentReports(CustomPair<String, List<GroupAIncidentReport>> groupAIncidentReportsPair) {
+	public void convertAndWriteGroupAIncidentReports(CustomPair<String, List<GroupAIncidentReport>> groupAIncidentReportsPair) throws Exception {
 		GroupAIncidentReport[] groupAIncidentReports = new GroupAIncidentReport[groupAIncidentReportsPair.getValue().size()];
 				
 		List<AdministrativeSegment> administrativeSegments = 
 				getAdministrativeSegments(false, groupAIncidentReportsPair.getValue().toArray(groupAIncidentReports));
 		for (AdministrativeSegment administrativeSegment: administrativeSegments) {
-			administrativeSegment.setAdministrativeSegmentId(0);
+			administrativeSegment.setAdministrativeSegmentId(1111111);
 			xmlReportGenerator.writeAdministrativeSegmentToXml(administrativeSegment, groupAIncidentReportsPair.getKey());
 		}
 	}

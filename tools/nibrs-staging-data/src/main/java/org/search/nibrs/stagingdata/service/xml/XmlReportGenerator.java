@@ -131,7 +131,7 @@ public class XmlReportGenerator {
 	}
 
 	@Async
-	public void processSubmissionTrigger(SubmissionTrigger submissionTrigger){
+	public void processSubmissionTrigger(SubmissionTrigger submissionTrigger) throws Exception{
 		
 	    File directorty = new File(appProperties.getNibrsNiemDocumentFolder()); 
 	    if (!directorty.exists()){
@@ -143,7 +143,7 @@ public class XmlReportGenerator {
 	}
 	
 	@Async
-	public void processGroupASubmission(Integer administrativeSegmentId){
+	public void processGroupASubmission(Integer administrativeSegmentId) throws Exception{
 		
 		File directorty = new File(appProperties.getNibrsNiemDocumentFolder()); 
 		if (!directorty.exists()){
@@ -153,7 +153,7 @@ public class XmlReportGenerator {
 		writeGroupAIncidentReport(administrativeSegmentId);
 	}
 	
-	private void writeGroupAIncidentReports(SubmissionTrigger submissionTrigger) {
+	private void writeGroupAIncidentReports(SubmissionTrigger submissionTrigger) throws Exception {
 		
 		List<Integer> ids = administrativeSegmentRepository.findIdsByOriListAndSubmissionDateRange(
 				submissionTrigger.getOris(), submissionTrigger.getStartDate(), submissionTrigger.getEndDate(), submissionTrigger.getAgencyIds());
@@ -163,7 +163,7 @@ public class XmlReportGenerator {
 		}
 	}
 
-	private void writeGroupAIncidentReport(Integer administrativeSegmentId) {
+	private void writeGroupAIncidentReport(Integer administrativeSegmentId) throws Exception {
 		log.info("Generating group A report for pkId " + administrativeSegmentId);
 		AdministrativeSegment administrativeSegment = administrativeSegmentRepository.findByAdministrativeSegmentId(administrativeSegmentId);
 		
@@ -181,6 +181,7 @@ public class XmlReportGenerator {
 		catch (Exception e) {
 			log.error("Failed to generate and write the report for GroupA Incident:\n " + administrativeSegment);
 			log.error(e.getMessage());
+			throw new RuntimeException(e); 
 		}
 	}
 	
@@ -209,6 +210,7 @@ public class XmlReportGenerator {
 		catch (Exception e) {
 			log.error("Failed to generate and write the report for Group B Arrest Report:\n " + arrestReportSegment);
 			log.error(e.getMessage());
+			throw new RuntimeException(e);
 		}
 	}
 

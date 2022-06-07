@@ -99,7 +99,9 @@
                 xhr = $.get(context + 'files/conversionStatus', function(data, status) {
               	  /* console.log("data.failedToProcess: " + data.failedToProcess); */
                   if (status == 'success'){
-                	  $('#downloadFile').removeClass('d-none');
+                    if (data.totalCount > data.failedToProcess.length){
+                    	  $('#downloadFile').removeClass('d-none');
+                    }
                  	  $('#progress').css('width', data.progress + '%').attr('aria-valuenow', data.progress);
                     $('#progress').html('' + data.processedCount + ' out of ' + data.totalCount + ' are processed ');
                   }
@@ -113,7 +115,12 @@
                  	  }
                     else if (data.progress>=100){
                   	  contentArray.push("All " + data.totalCount + ' reports are processed' );
-                      $('#downloadFile').removeClass('d-none');
+                  	  
+                  	  console.log(data.totalCount);
+                  	  console.log(data.failedToProcess.length); 
+                  	  if (data.totalCount > data.failedToProcess.length){
+                  		  $('#downloadFile').removeClass('d-none');
+                  	  }
                     }
                     else {
                   	  contentArray.push('The conversion process is aborted due to error.' );

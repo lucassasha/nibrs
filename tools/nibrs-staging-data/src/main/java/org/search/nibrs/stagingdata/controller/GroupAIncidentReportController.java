@@ -57,7 +57,7 @@ public class GroupAIncidentReportController {
 	}
 	
 	@RequestMapping(value="/groupAIncidentReportsToXml", method=RequestMethod.POST)
-	public void convert(@RequestBody CustomPair<String, List<GroupAIncidentReport>> groupAIncidentReportsPair){
+	public void convert(@RequestBody CustomPair<String, List<GroupAIncidentReport>> groupAIncidentReportsPair) throws Exception{
 		groupAIncidentService.convertAndWriteGroupAIncidentReports(groupAIncidentReportsPair);
 	}
 	
