@@ -43,6 +43,7 @@ public class GlobalControllerAdvice {
         model.addAttribute("brandImagePath", appProperties.getBrandImagePath());
         model.addAttribute("externalLinksMapping", appProperties.getExternalLinksMapping());
         model.addAttribute("aboutLinksMapping", appProperties.getAboutLinksMapping());
+        model.addAttribute("flatFileToXmlFileConversion", appProperties.getFlatFileToXmlFileConversion());
         
         AuthUser authUser = null;
         if (authentication != null) {

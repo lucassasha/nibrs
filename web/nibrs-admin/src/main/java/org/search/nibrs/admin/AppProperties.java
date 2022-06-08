@@ -36,6 +36,7 @@ public class AppProperties {
 	private Boolean demoLawEnforcementEmployerIndicator = true;
 	private Integer ajpPort = 9090; 
 	private Boolean ajpEnabled = true; 
+	private Boolean flatFileToXmlFileConversion = false; 
 	
 	private String externalTemplatesFolder;
 	private String brandImagePath="/images/search-logo-scales-transparent.png";
@@ -178,6 +179,14 @@ public class AppProperties {
 
 	public void setXmlDocumentDownloadRootFolder(String xmlDocumentDownloadRootFolder) {
 		this.xmlDocumentDownloadRootFolder = xmlDocumentDownloadRootFolder;
+	}
+
+	public Boolean getFlatFileToXmlFileConversion() {
+		return flatFileToXmlFileConversion;
+	}
+
+	public void setFlatFileToXmlFileConversion(Boolean flatFileToXmlFileConversion) {
+		this.flatFileToXmlFileConversion = flatFileToXmlFileConversion;
 	}
 
 }
