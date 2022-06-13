@@ -367,6 +367,7 @@ public class RestService{
 				.block();
 	}
 
+	@Async
 	public void convertValidReportsAsync(ReportProcessProgress reportConversionProgress,
 			ValidationResults validationToConvertResults, AuthUser authUser) {
 		log.info("Execute conversion method asynchronously. "

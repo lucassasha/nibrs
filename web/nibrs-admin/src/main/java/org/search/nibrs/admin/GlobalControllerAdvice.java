@@ -44,6 +44,7 @@ public class GlobalControllerAdvice {
         model.addAttribute("externalLinksMapping", appProperties.getExternalLinksMapping());
         model.addAttribute("aboutLinksMapping", appProperties.getAboutLinksMapping());
         model.addAttribute("flatFileToXmlFileConversion", appProperties.getFlatFileToXmlFileConversion());
+        model.addAttribute("flatFileToXmlFileConversionUpperLimit", appProperties.getFlatFileToXmlFileConversionUpperLimit());
         
         AuthUser authUser = null;
         if (authentication != null) {

@@ -37,6 +37,7 @@ public class AppProperties {
 	private Integer ajpPort = 9090; 
 	private Boolean ajpEnabled = true; 
 	private Boolean flatFileToXmlFileConversion = false; 
+	private Integer flatFileToXmlFileConversionUpperLimit = 5000; 
 	
 	private String externalTemplatesFolder;
 	private String brandImagePath="/images/search-logo-scales-transparent.png";
@@ -187,6 +188,14 @@ public class AppProperties {
 
 	public void setFlatFileToXmlFileConversion(Boolean flatFileToXmlFileConversion) {
 		this.flatFileToXmlFileConversion = flatFileToXmlFileConversion;
+	}
+
+	public Integer getFlatFileToXmlFileConversionUpperLimit() {
+		return flatFileToXmlFileConversionUpperLimit;
+	}
+
+	public void setFlatFileToXmlFileConversionUpperLimit(Integer flatFileToXmlFileConversionUpperLimit) {
+		this.flatFileToXmlFileConversionUpperLimit = flatFileToXmlFileConversionUpperLimit;
 	}
 
 }
