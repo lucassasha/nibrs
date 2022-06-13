@@ -383,7 +383,7 @@ public class RestService{
 			this.convertGroupAReport(groupAIncidentsToConvert, reportConversionProgress);
 		}
 		
-		List<List<GroupBArrestReport>> groupBArrestReportsSublists = ListUtils.partition(validationToConvertResults.getGroupBArrestReports(), 100);
+		List<List<GroupBArrestReport>> groupBArrestReportsSublists = ListUtils.partition(validationToConvertResults.getGroupBArrestReports(), 50);
 		for(List<GroupBArrestReport> groupBArrestReports: groupBArrestReportsSublists){
 			CustomPair<String, List<GroupBArrestReport>> groupBArrestsToConvert = 
 					new CustomPair<String, List<GroupBArrestReport>>(outputFolder, groupBArrestReports); 

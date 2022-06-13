@@ -18,6 +18,7 @@ package org.search.nibrs.admin.uploadfile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,9 +75,10 @@ public class DownloadService {
     			zipEntry.setTime(System.currentTimeMillis());
     			
     			zipOutputStream.putNextEntry(zipEntry);
-    			
-    			StreamUtils.copy(fileSystemResource.getInputStream(), zipOutputStream);
+    			InputStream fis = fileSystemResource.getInputStream(); 
+    			StreamUtils.copy(fis, zipOutputStream);
     			zipOutputStream.closeEntry();
+    			fis.close();
     		}
     		zipOutputStream.finish();
     	} catch (IOException e) {
