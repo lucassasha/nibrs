@@ -164,7 +164,7 @@
 			    <span th:text="${validationToConvertResults.countOfValidReport} + ' of the ' + ${validationToConvertResults.totalReportCount} + 
 			       ' records have been validated.'"></span>
 	        <button type="button" class="btn btn-primary btn-sm ml-2" id="convertToXmlAync" th:if="${validationToConvertResults.countOfValidReport} <= ${flatFileToXmlFileConversionUpperLimit}">Convert Valid Reports to XML</button>
-	        <a th:href="@{/files/downloadZipFile}" class="btn btn-primary btn-sm ml-2 d-none" id="downloadFile" onclick="unloadConfirmation = false">Click Here to Download</a>
+	        <a th:href="@{/files/downloadZipFile}" class="btn btn-primary btn-sm ml-2 d-none" id="downloadFile">Click Here to Download</a>
         </div>
         <div class="alert alert-warning" th:if="${validationToConvertResults.countOfValidReport} > ${flatFileToXmlFileConversionUpperLimit}" 
              th:text="'The valid report count exceeds the conversion limit ' + ${flatFileToXmlFileConversionUpperLimit} + ', please reduce the file size and try again.'"></div>

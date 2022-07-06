@@ -66,6 +66,12 @@
             	unloadConfirmation = true;
             }
         };
+        
+        $(function() {
+            $('body').on('click', 'a:not([href="#"]):not(.unloadConfirmation)', function() {
+            	unloadConfirmation = false; 
+            });
+        });
 		</script>
 	</body>
 </html>
