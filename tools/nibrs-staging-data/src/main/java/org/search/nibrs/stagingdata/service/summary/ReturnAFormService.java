@@ -141,6 +141,7 @@ public class ReturnAFormService {
 			Optional<Agency> agency = agencyRepository.findById(summaryReportRequest.getAgencyId());
 			if (agency.isPresent()){
 				returnAForm.setAgencyName(agency.get().getAgencyName());
+				returnAForm.setOri(agency.get().getAgencyOri());
 				returnAForm.setStateName(agency.get().getStateName());
 				returnAForm.setStateCode(agency.get().getStateCode());
 				returnAForm.setPopulation(agency.get().getPopulation());

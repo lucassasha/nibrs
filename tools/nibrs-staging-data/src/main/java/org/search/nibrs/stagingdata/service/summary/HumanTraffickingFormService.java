@@ -58,6 +58,7 @@ public class HumanTraffickingFormService {
 			Optional<Agency> agency = agencyRepository.findById(summaryReportRequest.getAgencyId()); 
 			if (agency.isPresent()){
 				humanTraffickingForm.setAgencyName(agency.get().getAgencyName());
+				humanTraffickingForm.setOri(agency.get().getAgencyOri());
 				humanTraffickingForm.setStateName(agency.get().getStateName());
 				humanTraffickingForm.setStateCode(agency.get().getStateCode());
 				humanTraffickingForm.setPopulation(agency.get().getPopulation());

@@ -67,6 +67,7 @@ public class SupplementaryHomicideReportService {
 			Optional<Agency> agency = agencyRepository.findById(summaryReportRequest.getAgencyId());
 			if (agency.isPresent()){
 				supplementaryHomicideReport.setAgencyName(agency.get().getAgencyName());
+				supplementaryHomicideReport.setOri(agency.get().getAgencyOri());
 				supplementaryHomicideReport.setStateName(agency.get().getStateName());
 				supplementaryHomicideReport.setStateCode(agency.get().getStateCode());
 				supplementaryHomicideReport.setPopulation(agency.get().getPopulation());

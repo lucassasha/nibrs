@@ -17,6 +17,7 @@ package org.search.nibrs.stagingdata.model.segment;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -101,6 +102,7 @@ public class ArrestReportSegment {
 	private TypeOfArrestType typeOfArrestType; 
 	private Integer ageOfArresteeMin; 
 	private Integer ageOfArresteeMax;
+	private Integer ageNumArrestee;
 	private String nonNumericAge;
 
 	@ManyToOne(fetch=FetchType.LAZY)
@@ -128,7 +130,7 @@ public class ArrestReportSegment {
 	private UcrOffenseCodeType ucrOffenseCodeType;
 	
 	@OneToMany(mappedBy = "arrestReportSegment", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<ArrestReportSegmentWasArmedWith> arrestReportSegmentWasArmedWiths;
+	private Set<ArrestReportSegmentWasArmedWith> arrestReportSegmentWasArmedWiths = new HashSet<ArrestReportSegmentWasArmedWith>();
 
 	@OneToOne(fetch = FetchType.LAZY) 
     @JoinColumn(name = "submissionId", nullable = true)
@@ -486,6 +488,12 @@ public class ArrestReportSegment {
 	}
 	public void setOwner(Owner owner) {
 		this.owner = owner;
+	}
+	public Integer getAgeNumArrestee() {
+		return ageNumArrestee;
+	}
+	public void setAgeNumArrestee(Integer ageNumArrestee) {
+		this.ageNumArrestee = ageNumArrestee;
 	}
 
 }

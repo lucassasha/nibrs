@@ -148,6 +148,13 @@ public class AdministrativeSegmentRepositorCustomImpl implements AdministrativeS
         		predicates.add(criteriaBuilder.and(criteriaBuilder.lessThanOrEqualTo(root.get("incidentDate"), incidentSearchRequest.getIncidentDateRangeEndDate())));
         	}
         	
+        	if (incidentSearchRequest.getReportTimestampStartDate() != null) {
+        		predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(root.get("reportTimestamp"), incidentSearchRequest.getReportTimestampStartDate().atStartOfDay())));
+        	}
+        	if (incidentSearchRequest.getReportTimestampEndDate() != null) {
+        		predicates.add(criteriaBuilder.and(criteriaBuilder.lessThan(root.get("reportTimestamp"), incidentSearchRequest.getReportTimestampEndDate().plusDays(1).atStartOfDay())));
+        	}
+        	
         	if (incidentSearchRequest.getUcrOffenseCodeTypeId() != null) {
         		Join<AdministrativeSegment, OffenseSegment> joinOptions = root.join("offenseSegments", JoinType.LEFT);
         		predicates.add(criteriaBuilder.and(criteriaBuilder.equal(joinOptions.get("ucrOffenseCodeType").get("ucrOffenseCodeTypeId"), 

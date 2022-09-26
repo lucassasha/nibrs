@@ -200,6 +200,7 @@ public class ArsonFormService {
 			Optional<Agency> agency = agencyRepository.findById(summaryReportRequest.getAgencyId()); 
 			if (agency.isPresent()){
 				arsonReport.setAgencyName(agency.get().getAgencyName());
+				arsonReport.setOri(agency.get().getAgencyOri());;
 				arsonReport.setStateName(agency.get().getStateName());
 				arsonReport.setStateCode(agency.get().getStateCode());
 				arsonReport.setPopulation(agency.get().getPopulation());
@@ -347,7 +348,7 @@ public class ArsonFormService {
 		for (PropertyType propertyType: propertySegment.getPropertyTypes()) {
 			String propertyDescription = propertyType.getPropertyDescriptionType().getNibrsCode();
 			Integer level = propertyDescriptionHierarchyMap.get(propertyDescription);
-			if (level <= 0) continue;
+			if (level == null || level <= 0) continue;
 			
 			if (level < currentLevel || 
 				(level == currentLevel && propertyType.getValueOfProperty() > currentValue)) {

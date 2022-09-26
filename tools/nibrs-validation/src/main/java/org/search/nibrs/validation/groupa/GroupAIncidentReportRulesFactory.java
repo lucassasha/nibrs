@@ -1047,8 +1047,14 @@ public class GroupAIncidentReportRulesFactory {
 									&& ((recoveredPropertyValueMap.get(entry.getKey()) != null
 												&& recoveredPropertyValueMap.get(entry.getKey()) > entry.getValue())
 										|| (PropertyDescriptionCode.isMotorVehicleCode(entry.getKey())
+												&& recoveredPropertyValueMap.get(entry.getKey()) != null
 												&& recoveredPropertyValueMap.get(PropertyDescriptionCode._38.code) != null 
-												&& recoveredPropertyValueMap.get(PropertyDescriptionCode._38.code) > entry.getValue()))){
+												&& (recoveredPropertyValueMap.get(PropertyDescriptionCode._38.code) + recoveredPropertyValueMap.get(entry.getKey())) > entry.getValue())
+										|| (PropertyDescriptionCode.isMotorVehicleCode(entry.getKey())
+												&& recoveredPropertyValueMap.get(entry.getKey()) == null
+												&& recoveredPropertyValueMap.get(PropertyDescriptionCode._38.code) != null 
+												&& recoveredPropertyValueMap.get(PropertyDescriptionCode._38.code) > entry.getValue()))
+									){
 								ret = subject.getErrorTemplate();
 								ret.setValue(entry.getKey());
 								ret.setNIBRSErrorCode(NIBRSErrorCode._084);

@@ -40,7 +40,14 @@
 
  	<dependencyManagement>
 		<dependencies>
-			<dependency>
+      <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-bom</artifactId>
+          <version>2.17.1</version>
+          <type>pom</type>
+          <scope>import</scope>
+      </dependency>
+ 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
 				<version>1.5.7.RELEASE</version>
@@ -73,12 +80,11 @@
 	      <groupId>org.springframework.boot</groupId>
 	      <artifactId>spring-boot-actuator</artifactId>
 	    </dependency>
-	
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-		<dependency>
+      <dependency>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-databind</artifactId>
+      </dependency>
+		  <dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-configuration-processor</artifactId>
 		    <optional>true</optional>
@@ -111,11 +117,6 @@
 	    </dependency>
 	
 		<!--NIBRS dependencies -->
- 		<dependency>
-			<groupId>org.search.nibrs</groupId>
-			<artifactId>nibrs-validate-common</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
  		<dependency>
 			<groupId>org.search.nibrs</groupId>
 			<artifactId>nibrs-staging-data-common</artifactId>

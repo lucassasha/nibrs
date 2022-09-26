@@ -54,6 +54,8 @@
 								<th>UCR Offense Type</th>
 								<th>Report Type</th>
 								<th>FBI Status</th>
+								<th>PCT Time Stamp</th>
+								<th>Primary Key</th>
 							</tr>
 						</thead>
 					</table>
@@ -82,9 +84,9 @@
 	
  		  <script th:inline="javascript">
 		       /*<![CDATA[*/
-		          var context = [[@{/}]];
-	            var offenseCodeMapping = [[${offenseCodeMapping}]]; 
-	            var allowSubmitToFbi = [[${allowSubmitToFbi}]];
+		          var context = /*[[@{/}]]*/ '';
+	            var offenseCodeMapping = /*[[${offenseCodeMapping}]]*/ []; 
+	            var allowSubmitToFbi = /*[[${allowSubmitToFbi}]]*/ false;
 		        /*]]>*/
 	
 		       $(function(){
@@ -94,6 +96,7 @@
 		          table = $('#searchResultsTable').DataTable({
 	              ajax: context +"incidents/pointers",
 	              rowId: "primaryKey",
+	              stateSave: true,
 	              columns: [
 	                  { "data": "incidentIdentifier" },
 	                  { "data": "agencyName" },
@@ -102,6 +105,7 @@
 	                  { "data": "ucrOffenseCodeTypeId" },
 	                  { "data": "reportType" },
 	                  { "data": "fbiStatus"}, 
+	                  { "data": "reportTimestamp", "visible":false}, 
 	                  { "data": "primaryKey", "visible":false}
 	              ], 
 	              buttons: [

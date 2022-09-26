@@ -18,16 +18,14 @@
 -->
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
+	<xsl:output method="xml" version="1.0" encoding="UTF-8"/>
+	<xsl:strip-space elements="*"/>
 	<xsl:template match="/">
 		<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ws="http://ws.nibrs.ucr.cjis.fbi.gov/">
 			<soap:Header/>
 			<soap:Body>
 				<ws:SubmitNibrsNIEMDocument >
-					<xmlDoc>
-						<xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text>
-							<xsl:copy-of select="."/>
-						<xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
+					<xmlDoc><xsl:text disable-output-escaping="yes">&lt;![CDATA[</xsl:text><xsl:copy-of select="."/><xsl:text disable-output-escaping="yes">]]&gt;</xsl:text>
 					</xmlDoc>
 				</ws:SubmitNibrsNIEMDocument>
 			</soap:Body>

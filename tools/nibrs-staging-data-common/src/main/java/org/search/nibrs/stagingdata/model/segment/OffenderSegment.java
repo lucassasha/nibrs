@@ -15,6 +15,7 @@
  */
 package org.search.nibrs.stagingdata.model.segment;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -63,6 +64,7 @@ public class OffenderSegment {
 
 	private Integer ageOfOffenderMin; 
 	private Integer ageOfOffenderMax;
+	private Integer ageNumOffender;
 	private String nonNumericAge; 
 	@ManyToOne
 	@JoinColumn(name="sexOfPersonTypeId") 
@@ -75,7 +77,7 @@ public class OffenderSegment {
 	private EthnicityOfPersonType ethnicityOfPersonType;
 	
 	@OneToMany(mappedBy = "offenderSegment", fetch=FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true)
-	private Set<VictimOffenderAssociation> victimOffenderAssociations;
+	private Set<VictimOffenderAssociation> victimOffenderAssociations = new HashSet<VictimOffenderAssociation>();
 	
 	public String toString(){
 		ReflectionToStringBuilder.setDefaultStyle(ToStringStyle.SHORT_PREFIX_STYLE);
@@ -201,5 +203,11 @@ public class OffenderSegment {
 			ageString = nonNumericAge;
 		}
 		return ageString;
+	}
+	public Integer getAgeNumOffender() {
+		return ageNumOffender;
+	}
+	public void setAgeNumOffender(Integer ageNumOffender) {
+		this.ageNumOffender = ageNumOffender;
 	}
 }

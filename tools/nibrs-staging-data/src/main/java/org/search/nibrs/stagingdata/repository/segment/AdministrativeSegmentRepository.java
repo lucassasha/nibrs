@@ -92,26 +92,28 @@ public interface AdministrativeSegmentRepository
 	List<Integer> findDistinctMonths(Integer agencyId, Integer Year, Integer ownerId);
 	
 	@Query("SELECT a.administrativeSegmentId from AdministrativeSegment a "
-			+ "LEFT JOIN a.arresteeSegments aa "
+			+ "LEFT JOIN a.arresteeSegments ar "
 			+ "WHERE a.administrativeSegmentId = ( SELECT max(administrativeSegmentId) "
 			+ "				FROM AdministrativeSegment aa "
 			+ "				WHERE aa.incidentNumber = a.incidentNumber AND"
+			+ "					aa.agency.agencyId = a.agency.agencyId AND "
 			+ "					(?4 = null OR ?4 = 0 OR aa.owner.ownerId = ?4 ) "
 			+ "				GROUP BY aa.incidentNumber ) AND "
 			+ "		(?1 = null OR a.ori = ?1 ) AND "
-			+ "		( year(aa.arrestDate) = ?2 AND ( ?3=0 OR month(aa.arrestDate) = ?3) ) ")
+			+ "		( year(ar.arrestDate) = ?2 AND ( ?3=0 OR month(ar.arrestDate) = ?3) ) ")
 	List<Integer> findIdsByOriAndArrestDate(String ori, Integer year, Integer month, Integer ownerId);
 	
 	@Query("SELECT a.administrativeSegmentId from AdministrativeSegment a "
-			+ "LEFT JOIN a.arresteeSegments aa "
+			+ "LEFT JOIN a.arresteeSegments ar "
 			+ "WHERE a.administrativeSegmentId = ( SELECT max(administrativeSegmentId) "
 			+ "				FROM AdministrativeSegment aa "
 			+ "				WHERE aa.incidentNumber = a.incidentNumber AND"
+			+ "					aa.agency.agencyId = a.agency.agencyId AND "
 			+ "					(?5 = null OR ?5 = 0 OR aa.owner.ownerId = ?5) "
 			+ "				GROUP BY aa.incidentNumber ) AND "
 			+ "		(?1 = null OR ?1='' OR a.agency.stateCode = ?1 ) AND "
 			+ "		(?2 = null OR a.agency.agencyId = ?2 ) AND "
-			+ "		( year(aa.arrestDate) = ?3 AND ( ?4=null OR ?4=0 OR month(aa.arrestDate) = ?4) ) ")
+			+ "		( year(ar.arrestDate) = ?3 AND ( ?4=null OR ?4=0 OR month(ar.arrestDate) = ?4) ) ")
 	List<Integer> findIdsByStateAndAgencyAndArrestDate(String stateCode, Integer agencyId, Integer arrestYear,
 			Integer arrestMonth, Integer ownerId);
 
@@ -127,7 +129,8 @@ public interface AdministrativeSegmentRepository
 	@Query("SELECT a.administrativeSegmentId from AdministrativeSegment a "
 			+ "WHERE a.administrativeSegmentId = ( SELECT max(administrativeSegmentId) "
 			+ "				FROM AdministrativeSegment aa "
-			+ "				WHERE aa.incidentNumber = a.incidentNumber "
+			+ "				WHERE aa.incidentNumber = a.incidentNumber AND "
+			+ "					aa.agency.agencyId = a.agency.agencyId "
 			+ "				GROUP BY aa.incidentNumber ) AND "
 			+ "		(?1 = null OR a.ori = ?1) AND "
 			+ "		(year(a.incidentDate) = ?2 AND ( ?3 = 0 OR month(a.incidentDate) = ?3)) ")
@@ -140,6 +143,7 @@ public interface AdministrativeSegmentRepository
 			+ "WHERE a.administrativeSegmentId = ( SELECT max(administrativeSegmentId) "
 			+ "				FROM AdministrativeSegment aa "
 			+ "				WHERE aa.incidentNumber = a.incidentNumber AND"
+			+ "					aa.agency.agencyId = a.agency.agencyId AND "
 			+ "					(?5 = null OR ?5 = 0 OR aa.owner.ownerId = ?5) "
 			+ "				GROUP BY aa.incidentNumber ) AND "
 			+ "		ao.ucrOffenseCodeType.nibrsCode in (?6)  AND"
@@ -157,6 +161,7 @@ public interface AdministrativeSegmentRepository
 			+ "WHERE a.administrativeSegmentId = ( SELECT max(administrativeSegmentId) "
 			+ "				FROM AdministrativeSegment aa "
 			+ "				WHERE aa.incidentNumber = a.incidentNumber AND"
+			+ "					aa.agency.agencyId = a.agency.agencyId AND "
 			+ "					(?5 = null OR ?5 = 0 OR aa.owner.ownerId = ?5) "
 			+ "				GROUP BY aa.incidentNumber ) AND "
 			+ "		ao.ucrOffenseCodeType.ucrOffenseCodeTypeId =200 AND"
@@ -175,6 +180,7 @@ public interface AdministrativeSegmentRepository
 			+ "WHERE a.administrativeSegmentId = ( SELECT max(administrativeSegmentId) "
 			+ "				FROM AdministrativeSegment aa "
 			+ "				WHERE aa.incidentNumber = a.incidentNumber AND"
+			+ "					aa.agency.agencyId = a.agency.agencyId AND "
 			+ "					(?5 = null OR ?5 = 0 OR aa.owner.ownerId = ?5) "
 			+ "				GROUP BY aa.incidentNumber ) AND "
 			+ "		ao.ucrOffenseCodeType.ucrOffenseCodeTypeId =200 AND"
@@ -189,37 +195,40 @@ public interface AdministrativeSegmentRepository
 	
 	@Query("SELECT distinct a.administrativeSegmentId from AdministrativeSegment a "
 			+ "LEFT JOIN a.offenseSegments ao "
-			+ "LEFT JOIN a.arresteeSegments aa "
+			+ "LEFT JOIN a.arresteeSegments ar "
 			+ "WHERE a.administrativeSegmentId = ( SELECT max(administrativeSegmentId) "
 			+ "				FROM AdministrativeSegment aa "
 			+ "				WHERE aa.incidentNumber = a.incidentNumber AND"
+			+ "					aa.agency.agencyId = a.agency.agencyId AND "
 			+ "					(?5 = null OR ?5 = 0 OR aa.owner.ownerId = ?5) "
 			+ "				GROUP BY aa.incidentNumber ) AND "
-			+ "		ao.ucrOffenseCodeType.nibrsCode in (?6) AND (aa.arrestDate is null OR aa.arrestDate = (select min (arrestDate) from a.arresteeSegments )) AND "
+			+ "		ao.ucrOffenseCodeType.nibrsCode in (?6) AND "
+			+ "		(ar.arrestDate is null OR ar.arrestDate = (select min (arrestDate) from a.arresteeSegments )) AND "
 			+ " 	(?1 = null OR ?1 = '' OR a.agency.stateCode = ?1) AND "
 			+ "		(?2 = null OR a.agency.agencyId = ?2) AND "
 			+ "		((year(a.exceptionalClearanceDate) = ?3 AND ( ?4 = 0 OR month(a.exceptionalClearanceDate) = ?4)) "
-			+ "			OR ( aa.arrestDate is not null and year(aa.arrestDate) = ?3 AND ( ?4 = 0 OR month(aa.arrestDate) = ?4 ))) ")
+			+ "			OR ( ar.arrestDate is not null and year(ar.arrestDate.arrestDate) = ?3 AND ( ?4 = 0 OR month(ar.arrestDate) = ?4 ))) ")
 	List<Integer> findIdsByStateCodeAndOriAndClearanceDateAndOffenses(String stateCode, Integer agencyId,
 			Integer incidentYear, Integer incidentMonth, Integer ownerId, List<String> offenseCodes);
 	
 	@Query("SELECT distinct a.administrativeSegmentId from AdministrativeSegment a "
 			+ "LEFT JOIN a.offenseSegments ao "
-			+ "LEFT JOIN a.arresteeSegments aa "
+			+ "LEFT JOIN a.arresteeSegments ar "
 			+ "LEFT JOIN a.propertySegments ap "
 			+ "WHERE a.administrativeSegmentId = ( SELECT max(administrativeSegmentId) "
 			+ "				FROM AdministrativeSegment aa "
 			+ "				WHERE aa.incidentNumber = a.incidentNumber AND"
+			+ "					aa.agency.agencyId = a.agency.agencyId AND "
 			+ "					(?5 = null OR ?5 = 0 OR aa.owner.ownerId = ?5) "
 			+ "				GROUP BY aa.incidentNumber ) AND "
 			+ "		ao.ucrOffenseCodeType.ucrOffenseCodeTypeId =200 AND "
 			+ "		(ao.offenseAttemptedCompleted = 'A' OR ao.offenseAttemptedCompleted = 'C') AND"
 			+ "		(ap.typePropertyLossEtcType.typePropertyLossEtcTypeId = 2 ) AND"
-			+ "		(aa.arrestDate = (select min (arrestDate) from a.arresteeSegments )) AND "
+			+ "		(ar.arrestDate = (select min (arrestDate) from a.arresteeSegments )) AND "
 			+ " 	(?1 = null OR ?1 = '' OR a.agency.stateCode = ?1) AND "
 			+ "		(?2 = null OR a.agency.agencyId = ?2) AND "
 			+ "		((year(a.exceptionalClearanceDate) = ?3 AND ( ?4 = 0 OR month(a.exceptionalClearanceDate) = ?4)) "
-			+ "			OR ( year(aa.arrestDate) = ?3 AND ( ?4 = 0 OR month(aa.arrestDate) = ?4 ))) ")
+			+ "			OR ( year(ar.arrestDate) = ?3 AND ( ?4 = 0 OR month(ar.arrestDate) = ?4 ))) ")
 	List<Integer> findArsonIdsByStateCodeAndOriAndClearanceDate(String stateCode, Integer agencyId,
 			Integer incidentYear, Integer incidentMonth, Integer ownerId);
 	
@@ -258,7 +267,8 @@ public interface AdministrativeSegmentRepository
 	@Query("SELECT a.administrativeSegmentId from AdministrativeSegment a "
 			+ "WHERE a.administrativeSegmentId = ( SELECT max(administrativeSegmentId) "
 			+ "				FROM AdministrativeSegment aa "
-			+ "				WHERE aa.incidentNumber = a.incidentNumber AND"
+			+ "				WHERE aa.incidentNumber = a.incidentNumber AND "
+			+ "					aa.agency.agencyId = a.agency.agencyId AND "
 			+ "					(?5 = null OR ?5 = 0 OR aa.owner.ownerId = ?5) "
 			+ "				GROUP BY aa.incidentNumber ) AND "
 			+ "		a.cargoTheftIndicatorType.cargoTheftIndicatorTypeId = 1 AND "

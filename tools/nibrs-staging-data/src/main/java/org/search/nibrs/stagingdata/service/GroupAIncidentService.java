@@ -113,7 +113,9 @@ import org.search.nibrs.stagingdata.repository.VictimOffenderRelationshipTypeRep
 import org.search.nibrs.stagingdata.repository.segment.AdministrativeSegmentRepository;
 import org.search.nibrs.stagingdata.repository.segment.AdministrativeSegmentRepositoryCustom;
 import org.search.nibrs.stagingdata.repository.segment.OffenseSegmentRepository;
+import org.search.nibrs.stagingdata.service.xml.XmlReportGenerator;
 import org.search.nibrs.stagingdata.util.DateUtils;
+import org.search.nibrs.util.CustomPair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -194,6 +196,9 @@ public class GroupAIncidentService {
 	@Autowired
 	public CodeTableService codeTableService; 
 	
+	@Autowired
+	public XmlReportGenerator xmlReportGenerator; 
+	
 	@Transactional
 	public AdministrativeSegment saveAdministrativeSegment(AdministrativeSegment administrativeSegment){
 		return administrativeSegmentRepository.save(administrativeSegment);
@@ -233,6 +238,12 @@ public class GroupAIncidentService {
 	}
 	
 	public Iterable<AdministrativeSegment> saveGroupAIncidentReports(GroupAIncidentReport... groupAIncidentReports){
+		List<AdministrativeSegment> administrativeSegments = getAdministrativeSegments(true,groupAIncidentReports);
+		
+		return administrativeSegmentRepository.saveAll(administrativeSegments);
+	}
+
+	private List<AdministrativeSegment> getAdministrativeSegments(Boolean isToPersist, GroupAIncidentReport... groupAIncidentReports) {
 		List<AdministrativeSegment> administrativeSegments = new ArrayList<>();
 		
 		for (GroupAIncidentReport groupAIncidentReport: groupAIncidentReports){
@@ -242,7 +253,7 @@ public class GroupAIncidentService {
 				Owner owner = new Owner(groupAIncidentReport.getOwnerId());
 				administrativeSegment.setOwner(owner);
 			}
-			log.info("Persisting GroupAIncident: " + groupAIncidentReport.getIncidentNumber());
+			log.info("Converting GroupAIncident to DB model: " + groupAIncidentReport.getIncidentNumber());
 			
 			
 			Optional<Integer> monthOfTape = Optional.ofNullable(groupAIncidentReport.getMonthOfTape());
@@ -257,7 +268,8 @@ public class GroupAIncidentService {
 			administrativeSegment.setOri(groupAIncidentReport.getOri());
 			administrativeSegment.setIncidentNumber(groupAIncidentReport.getIncidentNumber());
 			
-			if (groupAIncidentReport.getYearOfTape() != null && groupAIncidentReport.getMonthOfTape() != null) {
+			if (groupAIncidentReport.getYearOfTape() != null && groupAIncidentReport.getMonthOfTape() != null
+					&& isToPersist) {
 				boolean havingNewerSubmission = administrativeSegmentRepository.existsByIncidentNumberAndOriAndSubmissionDateAndOwnerId
 						(administrativeSegment.getIncidentNumber(), administrativeSegment.getOri(), 
 								DateUtils.getStartDate(groupAIncidentReport.getYearOfTape(), 
@@ -322,8 +334,7 @@ public class GroupAIncidentService {
 			processVictims(administrativeSegment, groupAIncidentReport);
 			administrativeSegments.add(administrativeSegment);
 		}
-		
-		return administrativeSegmentRepository.saveAll(administrativeSegments);
+		return administrativeSegments;
 	}
 	private void processProperties(AdministrativeSegment administrativeSegment,
 			GroupAIncidentReport groupAIncidentReport) {
@@ -485,6 +496,7 @@ public class GroupAIncidentService {
 				Optional<NIBRSAge> victimAge = Optional.ofNullable(victim.getAge());
 				victimSegment.setAgeOfVictimMax(victimAge.map(NIBRSAge::getAgeMax).orElse(null));
 				victimSegment.setAgeOfVictimMin(victimAge.map(NIBRSAge::getAgeMin).orElse(null));
+				victimSegment.setAgeNumVictim(victimAge.map(NIBRSAge::getAverage).orElse(null));
 				victimSegment.setAgeNeonateIndicator(BooleanUtils.toIntegerObject(victimAge.map(NIBRSAge::isNeonate).orElse(false)));
 				victimSegment.setAgeFirstWeekIndicator(BooleanUtils.toIntegerObject(victimAge.map(NIBRSAge::isNewborn).orElse(false)));
 				victimSegment.setAgeFirstYearIndicator(BooleanUtils.toIntegerObject(victimAge.map(NIBRSAge::isBaby).orElse(false)));
@@ -650,6 +662,7 @@ public class GroupAIncidentService {
 				Optional<NIBRSAge> arresteeAge = Optional.ofNullable(arrestee.getAge());
 				arresteeSegment.setAgeOfArresteeMin(arresteeAge.map(NIBRSAge::getAgeMin).orElse(null));
 				arresteeSegment.setAgeOfArresteeMax(arresteeAge.map(NIBRSAge::getAgeMax).orElse(null));
+				arresteeSegment.setAgeNumArrestee(arresteeAge.map(NIBRSAge::getAverage).orElse(null));
 				arresteeSegment.setNonNumericAge(arresteeAge.map(NIBRSAge::getNonNumericAge).orElse(null));
 				
 				SexOfPersonType sexOfPersonType = codeTableService.getCodeTableType(
@@ -705,6 +718,8 @@ public class GroupAIncidentService {
 				Optional<NIBRSAge> offenderAge = Optional.ofNullable(offender.getAge());
 				offenderSegment.setAgeOfOffenderMax(offenderAge.map(NIBRSAge::getAgeMax).orElse(null));
 				offenderSegment.setAgeOfOffenderMin(offenderAge.map(NIBRSAge::getAgeMin).orElse(null));
+				offenderSegment.setAgeNumOffender(offenderAge.map(NIBRSAge::getAverage).orElse(null));
+
 				offenderSegment.setNonNumericAge(offenderAge.map(NIBRSAge::getNonNumericAge).orElse(null));
 				offenderSegment.setOffenderSequenceNumber(offender.getOffenderSequenceNumber().getValue());
 				
@@ -860,5 +875,17 @@ public class GroupAIncidentService {
 			return administrativeSegmentRepositoryCustom.deleteByIds(administrativeSegmentIds);
 		}
 	}
+
+	public void convertAndWriteGroupAIncidentReports(CustomPair<String, List<GroupAIncidentReport>> groupAIncidentReportsPair) throws Exception {
+		GroupAIncidentReport[] groupAIncidentReports = new GroupAIncidentReport[groupAIncidentReportsPair.getValue().size()];
+				
+		List<AdministrativeSegment> administrativeSegments = 
+				getAdministrativeSegments(false, groupAIncidentReportsPair.getValue().toArray(groupAIncidentReports));
+		for (AdministrativeSegment administrativeSegment: administrativeSegments) {
+			administrativeSegment.setAdministrativeSegmentId(1111111);
+			xmlReportGenerator.writeAdministrativeSegmentToXml(administrativeSegment, groupAIncidentReportsPair.getKey());
+		}
+	}
+
 
 }

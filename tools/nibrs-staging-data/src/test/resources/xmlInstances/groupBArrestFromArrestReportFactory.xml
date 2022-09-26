@@ -52,10 +52,10 @@
         </nibrs:ReportHeader>
         <nc:Person s:id="PersonArrestee-1">
             <nc:PersonAgeMeasure>
-                <nc:MeasureRangeValue>
+                <nc:MeasureIntegerRange>
                     <nc:RangeMaximumIntegerValue>25</nc:RangeMaximumIntegerValue>
                     <nc:RangeMinimumIntegerValue>22</nc:RangeMinimumIntegerValue>
-                </nc:MeasureRangeValue>
+                </nc:MeasureIntegerRange>
             </nc:PersonAgeMeasure>
             <j:PersonEthnicityCode>N</j:PersonEthnicityCode>
             <j:PersonRaceNDExCode>W</j:PersonRaceNDExCode>

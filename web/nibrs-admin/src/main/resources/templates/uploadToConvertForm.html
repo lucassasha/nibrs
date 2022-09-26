@@ -1,0 +1,163 @@
+<!--
+
+    Copyright 2016 SEARCH-The National Consortium for Justice Information and Statistics
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>NIBRS ADMIN Tool</title>
+  <th:block th:include="fragments/general.html :: headerfiles"></th:block>
+</head>
+<body>
+	<div th:replace="fragments/header :: header"></div>
+	<div id="mainContent">
+	 	<div id="content" class="container" th:fragment="uploadForm">
+		 	<nav aria-label="breadcrumb">
+	       <ol class="breadcrumb">
+	           <li class="breadcrumb-item"><a th:href="@{/home}">Home</a></li>
+	           <li class="breadcrumb-item active" aria-current="page">Upload Flat File to Convert</li>
+	       </ol>
+		 	</nav>
+ 	 		<div class="p-1">
+ 	 		  <div><h6><strong>Upload Flat File to Convert</strong></h6> </div>
+ 	 		  <ul>
+ 	 		    <li>This tool will only convert up to 5,000 reports. If you need to convert more than this, please do this in batches.</li>
+ 	 		    <li>Only performs standard NIBRS edit and validation checks (no state-specific validation)</li>
+ 	 		    <li>Applies the 2019.1 data edit and validation rules</li>
+ 	 		  </ul>
+			</div>
+	 		<div>
+				<div id="errorMsg"></div>
+        <div align="center">
+            <h6><strong>Choose or drag and drop your flat file to get started</strong></h6>
+            <p class="m-3">
+              You may validate multiple NIBRS files at once: <br>
+              legacy flat file with multiple records, and a compressed(zip) file with multiple files. 
+            </p>
+        </div>
+				
+				<form method="POST" enctype="multipart/form-data" th:action="@{/files/uploadToConvert}" class="box m-5">
+				  	<div id="uploads"></div>
+				 	<div class="dropzone" id="dropzone">
+						<div id="loadingFileAjaxPane" ></div>
+				 		<input type="file" name="file" id="file" class="inputfile" form="fileform" accept="application/zip, text/plain, application/octet-stream"/>  
+				 		<span><label for="file" class="inputfileLabel"><Strong>Choose</Strong></label><strong> or drag and drop file here.</strong> </span>
+			 		</div>		
+				</form>
+			</div>
+			<div class="row">
+			  <div class="offset-2">
+					<p><strong>Limitations:</strong></p>
+						<ul>
+							<li>Validation rules only reflect the FBI’s NIBRS rules. Does not include state-specific data elements and rules.</li>
+							<li>Cannot validate some NIBRS rules specific to the submitting agency. See <a href="#" id="toolLimitations" data-toggle="modal" data-target="#toolLimitationModal">Tool Limitations</a> for specific details.</li>
+						</ul>
+				</div>
+			</div>
+
+			<script th:inline="javascript">
+			</script>
+			
+      <div class="modal ojbc-modal" id="toolLimitationModal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h6 class="modal-title">TOOL LIMITATIONS</h6>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+      
+            <!-- Modal body -->
+            <div class="modal-body">
+			        <p>There are some NIBRS rules that the NIBRS PCT cannot enforce because the validation relies on access to previously submitted incidents or specific FBI information on the submitting agency. There are other differences between the NIBRS PCT Report and FBI Error Data Set (EDS) due to different interpretations of the rules. These are being addressed with the FBI and the NIBRS PCT will be updated to be consistent with the FBI Report. </p>
+			        <p><strong>GROUP A INCIDENT REPORT</strong></p>
+			        <ul>
+			          <li>
+			          Structure Check Errors
+			            <ul>
+			              <li>930: Invalid ORI – ORI marked for historical reference</li>
+			              <li>931: Invalid ORI – ORI marked for historical reference</li>
+			              <li>932: Invalid ORI – ORI information is duplicated</li>
+			              <li>933: Invalid ORI – ORI not found in reference data</li>
+			              <li>934: Invalid ORI – ORI is covered by another agency</li>
+			              <li>952: Invalid ORI – ORI is not in UCR file</li>
+			            </ul>
+			          </li>
+			          <li>
+			            Administrative Segment Errors – Level 1
+			            <ul>
+			              <li>118: Date cannot be on or after the inactive date of the ORI</li>
+			              <li>173: Incident date cannot be before date ORI went IBR</li>
+			            </ul>
+			          </li>
+			          <li>
+			            Offense Segment Errors – Level 2 
+			            <ul>
+			              <li>All errors are validated</li>
+			            </ul>
+			          </li>
+			          <li>
+			            Property Segment Errors – Level 3
+			            <ul>
+			              <li>All errors are validated</li>
+			            </ul>
+			          </li>
+			          <li>
+			            Victim Segment Errors – Level 4
+			            <ul>
+			              <li>All errors are validated</li>
+			            </ul>
+			          </li>
+			          <li>
+			            Offender Segment Errors – Level 5
+			            <ul>
+			              <li>All errors are validated</li>
+			            </ul>
+			          </li>
+			          <li>
+			            Arrest Segment Errors – Level 6
+			            <ul>
+			              <li>618: Arrest date cannot on or after the inactive date of the ORI</li>
+			            </ul>
+			          </li>
+			        </ul>
+			        
+			        <p><strong>GROUP B ARREST REPORTS</strong></p>
+			        <ul>
+			          <li>718: Arrest date cannot be on or after the inactive date of the ORI</li>
+			          <li>759: Duplicate Group B arrest report segment on file</li>
+			          <li>798: Missing arrest date for delete, duplicate match</li>
+			          <li>799: Missing arrest date for delete, multiple matches</li>
+			        </ul>
+			        
+			        <p><strong>ZERO REPORTS</strong></p>
+			        <ul>
+			          <li>028: Cannot add zero report – Group A incident report on file for this month</li>
+			          <li>029: Cannot add zero report – Group B Arrest report on file for this month</li>
+			          <li>093: Zero report month/year is prior to agency conversion to NIBRS</li>
+			          <li>096: Zero report month/year cannot be on or after date agency is placed on covered-by status</li>
+			        </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+			
+			<script type="text/javascript" th:src="@{/js/uploadFile.js}"></script>
+			
+		</div>
+	</div>
+</body>
+</html>

@@ -34,13 +34,21 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <nibrs-validate-common-version>[1.0.1,)</nibrs-validate-common-version>
 		<java.version>1.8</java.version>
 		<poi-version>3.14</poi-version>
 	</properties>
 
  	<dependencyManagement>
 		<dependencies>
-			<dependency>
+      <dependency>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-bom</artifactId>
+          <version>2.17.1</version>
+          <type>pom</type>
+          <scope>import</scope>
+      </dependency>
+ 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-dependencies</artifactId>
 				<version>2.0.5.RELEASE</version>
@@ -98,7 +106,7 @@
  		<dependency>
 			<groupId>org.search.nibrs</groupId>
 			<artifactId>nibrs-validate-common</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${nibrs-validate-common-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-cli</groupId>

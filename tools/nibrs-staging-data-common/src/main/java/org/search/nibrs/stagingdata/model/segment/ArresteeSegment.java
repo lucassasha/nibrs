@@ -78,6 +78,7 @@ public class ArresteeSegment {
 	
 	private Integer ageOfArresteeMin; 
 	private Integer ageOfArresteeMax;
+	private Integer ageNumArrestee;
 	private String nonNumericAge;
 
 	@ManyToOne
@@ -384,6 +385,12 @@ public class ArresteeSegment {
 	}
 	public void setNonNumericAge(String nonNumericAge) {
 		this.nonNumericAge = nonNumericAge;
+	}
+	public Integer getAgeNumArrestee() {
+		return ageNumArrestee;
+	}
+	public void setAgeNumArrestee(Integer ageNumArrestee) {
+		this.ageNumArrestee = ageNumArrestee;
 	}
 
 }

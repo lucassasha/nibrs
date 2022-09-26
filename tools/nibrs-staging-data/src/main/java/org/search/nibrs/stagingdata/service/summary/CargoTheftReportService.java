@@ -50,6 +50,7 @@ public class CargoTheftReportService {
 			Optional<Agency> agency = agencyRepository.findById(summaryReportRequest.getAgencyId()); 
 			if (agency.isPresent()){
 				cargoTheftReport.setAgencyName(agency.get().getAgencyName());
+				cargoTheftReport.setOri(agency.get().getAgencyOri());
 				cargoTheftReport.setStateName(agency.get().getStateName());
 				cargoTheftReport.setStateCode(agency.get().getStateCode());
 				cargoTheftReport.setPopulation(agency.get().getPopulation());

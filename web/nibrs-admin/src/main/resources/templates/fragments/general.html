@@ -36,10 +36,10 @@
 <body>
     <header th:fragment="header">
         <div class="banner mt-5 pt-1" th:fragment="banner" id="banner">
-          <div class="text-white pl-3 align-middle pb-1">
-            <img th:src="@{${brandImagePath}}" height="72px" /> 
-            <span class="initials align-bottom" aria-hidden="true">NIBRS</span>
-            <span class="fullname align-middle">Services Toolset</span>
+          <div class="text-white pl-3 align-bottom pb-1">
+            <img th:src="@{${brandImagePath}}" height="72px" class="align-bottom"/> 
+            <span class="initials" aria-hidden="true">NIBRS</span>
+            <span class="fullname">Services Toolset</span>
           </div>
         </div>
 	      <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top fh-fixedHeader">
@@ -69,8 +69,19 @@
 	            <li class="nav-item" th:if="${allowSubmitToFbi && !agencyMapping.empty}">
 	              <a class="nav-link" href="#" id="submitToFbi">Submit to FBI</a>
 	            </li>
+              <li class="nav-item" th:if="${flatFileToXmlFileConversion}">
+                <a class="nav-link uploadFlatFileToConvert" href="#" id="uploadFlatFileToConvert">Flat File to XML</a>
+              </li>
 	            <li th:each="instance : ${externalLinksMapping}" class="nav-item">
 							   <a class="nav-link external-link" th:href="${instance.value}" th:text="${instance.key}" target="_blank"></a>
+							</li>
+							<li class="nav-item dropdown" th:if="${aboutLinksMapping!=null && !aboutLinksMapping.empty}">
+							   <a class="nav-link dropdown-toggle" href="#" id="dropdownAbout" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</a>
+                 <div class="dropdown-menu" aria-labelledby="dropdownAbout">
+                   <th:block th:each="aboutLink : ${aboutLinksMapping}">
+                      <a class="dropdown-item"  th:href="${aboutLink.value}" th:text="${aboutLink.key}" target="_blank"></a>
+                   </th:block>
+                 </div>
 							</li>
 	          </ul>
 	          
@@ -82,7 +93,9 @@
 			          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
 			            <a class="dropdown-item disabled"><span class="small font-italic pr-2 text-secondary">Signed in as <strong th:text="${#authentication.getPrincipal().getUsername()}"></strong></span></a>
 			            <div class="dropdown-divider"></div>
-			            <a class="dropdown-item" th:href="@{/logout}"><span class="small font-italic pr-2">Sign Out</span> <i class="fas fa-sign-out-alt"></i></a>
+			            <a class="dropdown-item unloadConfirmation" href="https://nibrs.search.org/home"><span class="small font-italic pr-2">User Profile</span></a>
+			            <div class="dropdown-divider"></div>
+			            <a class="dropdown-item unloadConfirmation" th:href="@{/logout}"><span class="small font-italic pr-2">Sign Out</span> <i class="fas fa-sign-out-alt"></i></a>
 			          </div>
               </li>
             </ul>
@@ -91,8 +104,9 @@
       </header>
 	    <p>Go to the next page to see fragments in action</p>
 	    <footer class="footer" th:fragment="footer">
-	      <div class="container" align="center">
+	      <div class="container-fluid" align="center">
 	        <span>Questions? Email SEARCH at <a href="mailto:nibrs@search.org">nibrs@search.org</a></span>
+	        <p class="text-muted">This Web site is funded through a grant from the Bureau of Justice Statistics, Office of Justice Programs, U.S. Department of Justice. Neither the U.S. Department of Justice nor any of its components operate, control, are responsible for, or necessarily endorse, this Web site (including, without limitation, its content, technical infrastructure, and policies, and any services or tools provided).</p>
 	      </div>
 	    </footer>
     
@@ -123,10 +137,10 @@
 	    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.colVis.min.js"></script> 
 			<script th:inline="javascript">
 				/*<![CDATA[*/
-					var context = [[@{/}]];
-					var securityEnabled = [[${securityEnabled}]]; 
-					var inactivityTimeout = [[${inactivityTimeout}]]; 
-					var inactivityTimeoutInSeconds = [[${inactivityTimeoutInSeconds}]]; 
+					var context = /*[[@{/}]]*/ '';
+					var securityEnabled = /*[[${securityEnabled}]]*/ true; 
+					var inactivityTimeout = /*[[${inactivityTimeout}]]*/ true; 
+					var inactivityTimeoutInSeconds = /*[[${inactivityTimeoutInSeconds}]]*/ 1800; 
 				/*]]>*/
 				var idleTime;
 				var table;
@@ -169,6 +183,15 @@
 						$(this).parent().toggleClass('show');
 						
 						xhr = $.get(context + 'files/upload', function(data) {
+						   $('#portalContent').html(data); 
+						 }).fail(ojbc.displayFailMessage);
+						return false; 
+	        });
+			    	  
+					$('body').on('click', 'a.uploadFlatFileToConvert', function() {   
+						$(this).parent().toggleClass('show');
+						
+						xhr = $.get(context + 'files/uploadToConvertForm', function(data) {
 						   $('#portalContent').html(data); 
 						 }).fail(ojbc.displayFailMessage);
 						return false; 
