@@ -177,12 +177,18 @@ public enum OffenseCode {
 		_90Z.code).contains(code);
 	}
 	
+	public static final boolean isCommerceViolations(String code) {
+		return Arrays.asList(
+				_58A.code, _58B.code, _61A.code, _61B.code,
+				_620.code).contains(code);
+	}
+	
 	public static final boolean containsCrimeAgainstSocietyCode(Collection<String> codes) {
 		return codes.stream().anyMatch(code -> isCrimeAgainstSocietyCode(code));
 	}
 
 	public static final boolean isCrimeAgainstPropertyCode(String code) {
-		return Arrays.asList(_200.code,
+		return Arrays.asList(_200.code, _26H.code, 
 				_510.code, _220.code, _250.code,
 				_290.code, _270.code, _210.code,
 				_26A.code, _26B.code, _26C.code,
@@ -306,5 +312,5 @@ public enum OffenseCode {
 	public void setCrimeAgainst(CrimeAgainstCode crimeAgainst) {
 		this.crimeAgainst = crimeAgainst;
 	}
-
+	
 }

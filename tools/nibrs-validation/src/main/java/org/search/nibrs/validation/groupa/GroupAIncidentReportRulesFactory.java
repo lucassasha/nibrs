@@ -750,10 +750,16 @@ public class GroupAIncidentReportRulesFactory {
 			@Override
 			public NIBRSError apply(GroupAIncidentReport subject) {
 				NIBRSError ret = null;
-				if ((subject.getOffenseForOffenseCode(OffenseCode._100.code) == null &&
-						subject.getOffenseForOffenseCode(OffenseCode._35B.code) == null && 
-						subject.getOffenseForOffenseCode(OffenseCode._35A.code) == null &&
-						!subject.includesGamblingOffense() && !subject.includesPropertyCrime()) && !subject.getProperties().isEmpty()) {
+				
+				boolean isPropertySegmentAllowable = subject.getOffenses()
+						.stream().map(OffenseSegment::getUcrOffenseCode)
+						.anyMatch(code-> OffenseCode.isCrimeRequirePropertySegement(code)
+								|| OffenseCode.isCommerceViolations(code)
+								|| Objects.equals(code, OffenseCode._521.code)
+								|| Objects.equals(code, OffenseCode._522.code)
+								|| Objects.equals(code, OffenseCode._526.code)); 
+				
+				if ( !isPropertySegmentAllowable && !subject.getProperties().isEmpty()) {
 					ret = subject.getErrorTemplate();
 					ret.setValue(null);
 					ret.setDataElementIdentifier("L 3");
