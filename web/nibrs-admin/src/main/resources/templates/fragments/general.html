@@ -75,6 +75,9 @@
 	            <li th:each="instance : ${externalLinksMapping}" class="nav-item">
 							   <a class="nav-link external-link" th:href="${instance.value}" th:text="${instance.key}" target="_blank"></a>
 							</li>
+              <li class="nav-item" th:if="${authUser.emailAddress=='nibrs@search.org'}">
+                <a class="nav-link dashboard external-link" href="https://app.powerbi.com/groups/me/reports/443c5f60-17bf-4057-8922-4b6e0b045566/ReportSectionfcf39247cc57080e165b" id="dashboard" target="_blank">NIBRS Dashboard</a>
+              </li>
 							<li class="nav-item dropdown" th:if="${aboutLinksMapping!=null && !aboutLinksMapping.empty}">
 							   <a class="nav-link dropdown-toggle" href="#" id="dropdownAbout" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</a>
                  <div class="dropdown-menu" aria-labelledby="dropdownAbout">
