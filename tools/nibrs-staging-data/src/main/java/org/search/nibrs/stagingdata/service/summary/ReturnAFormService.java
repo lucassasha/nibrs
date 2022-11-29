@@ -779,11 +779,12 @@ public class ReturnAFormService {
 					.map(propertyType -> propertyType.getPropertyDescriptionType().getNibrsCode())
 					.filter(code -> PropertyDescriptionCode.isMotorVehicleCode(code))
 					.collect(Collectors.toList()); 
+			
+			int numberOfStolenMotorVehicles = Optional.ofNullable(property.getNumberOfStolenMotorVehicles()).orElse(0);
 			if ("A".equals(offense.getOffenseAttemptedCompleted())){
 				rows[Enum.valueOf(enumType, "AUTOS_THEFT").ordinal()].increaseReportedOffenses(motorVehicleCodes.size());
 			}
-			else if (property.getNumberOfStolenMotorVehicles() > 0){
-				int numberOfStolenMotorVehicles = Optional.ofNullable(property.getNumberOfStolenMotorVehicles()).orElse(0);
+			else if (numberOfStolenMotorVehicles > 0){
 				
 				if (motorVehicleCodes.contains(PropertyDescriptionCode._03.code)){
 					for (String code: motorVehicleCodes){
