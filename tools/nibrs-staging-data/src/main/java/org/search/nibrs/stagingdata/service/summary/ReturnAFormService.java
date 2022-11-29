@@ -1153,7 +1153,7 @@ public class ReturnAFormService {
 					.stream()
 					.filter(propertySegment -> propertySegment.getTypePropertyLossEtcType().getNibrsCode().equals("7"))
 					.flatMap(i->i.getPropertyTypes().stream())
-					.filter(i->i.getValueOfProperty() > 0)
+					.filter(i->i.getValueOfProperty() != null &&  i.getValueOfProperty() > 0)
 					.collect(Collectors.toList());
 			
 			if (stolenPropertyTypes.size() > 0){
