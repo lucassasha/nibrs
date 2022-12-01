@@ -17,8 +17,11 @@ package org.search.nibrs.model.codes;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -125,6 +128,16 @@ public enum OffenseCode {
 	public String group;
 	private CrimeAgainstCode crimeAgainst;
 	
+	private static final Map<String,OffenseCode> ENUM_MAP;
+	
+	 static {
+	        Map<String,OffenseCode> map = new HashMap<String, OffenseCode>();
+	        for (OffenseCode instance : OffenseCode.values()) {
+	            map.put(instance.code.toLowerCase(),instance);
+	        }
+	        ENUM_MAP = Collections.unmodifiableMap(map);
+	    }
+
 	private OffenseCode(String code, String description, String group
 			, CrimeAgainstCode crimeAgainstCode) {
 		this.code = code;
@@ -146,14 +159,7 @@ public enum OffenseCode {
 	}
 	
 	public static final OffenseCode forCode(String code) {
-		OffenseCode ret = null;
-		for(OffenseCode c : asSet()) {
-			if (c.code.equals(code)) {
-				ret = c;
-				break;
-			}
-		}
-		return ret;
+		return ENUM_MAP.get(code.toLowerCase());
 	}
 	
 	public static final boolean isCrimeAgainstPersonCode(String code) {
