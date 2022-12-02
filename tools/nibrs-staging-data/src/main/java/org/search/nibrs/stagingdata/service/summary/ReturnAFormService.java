@@ -317,6 +317,7 @@ public class ReturnAFormService {
 						summaryReportRequest.getOwnerId(), new ArrayList(partIOffensesMap.keySet()));
 		int i; 
 		int batchSize = appProperties.getSummaryReportProcessingBatchSize();
+		log.info(administrativeSegmentIds.size() + " offense Clearances to process.");
 		for (i = 0; i+ batchSize < administrativeSegmentIds.size(); i+=batchSize ) {
 			log.info("processing offense Clearances " + i + " to " + String.valueOf(i+batchSize));
 			getRecordCardOffenseClearanceRows(returnARecordCardReport, administrativeSegmentIds.subList(i, i+batchSize));
@@ -424,6 +425,7 @@ public class ReturnAFormService {
 						summaryReportRequest.getOwnerId(), offenseCodes);
 		int i ; 
 		int batchSize = appProperties.getSummaryReportProcessingBatchSize();
+		log.info(administrativeSegmentIds.size() + " Reported offenses to process ");
 		for (i = 0; i+batchSize < administrativeSegmentIds.size(); i+=batchSize ) {
 			log.info("processing Reported offenses " + i + " to " + String.valueOf(i+batchSize));
 			getRecordCardReportedOffenseRows(returnARecordCardReport, administrativeSegmentIds.subList(i, i+batchSize));
@@ -653,6 +655,7 @@ public class ReturnAFormService {
 						summaryReportRequest.getOwnerId(), new ArrayList(partIOffensesMap.keySet()));
 		int i; 
 		int batchSize = appProperties.getSummaryReportProcessingBatchSize();
+		log.info(administrativeSegmentIds.size() + " offense Clearances to process.");
 		for (i = 0; i+ batchSize < administrativeSegmentIds.size(); i+=batchSize ) {
 			log.info("processing offense Clearances " + i + " to " + String.valueOf(i+batchSize));
 			getOffenseClearanceRows(returnAForm.getRows(), administrativeSegmentIds.subList(i, i+batchSize), ReturnARowName.class);
@@ -672,6 +675,7 @@ public class ReturnAFormService {
 						summaryReportRequest.getOwnerId(), new ArrayList(partIOffensesMap.keySet()));
 		int i ; 
 		int batchSize = appProperties.getSummaryReportProcessingBatchSize();
+		log.info(administrativeSegmentIds.size() + " Reported offenses to process. ");
 		for (i = 0; i+batchSize < administrativeSegmentIds.size(); i+=batchSize ) {
 			log.info("processing Reported offenses " + i + " to " + String.valueOf(i+batchSize));
 			getReportedOffenseRows(returnAForm, administrativeSegmentIds.subList(i, i+batchSize), summaryReportRequest);

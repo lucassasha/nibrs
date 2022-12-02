@@ -81,7 +81,11 @@
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
 		
-        <!-- Use MySQL Connector-J -->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+    <!-- Use MySQL Connector-J -->
     <dependency>
 	    <groupId>mysql</groupId>
 	    <artifactId>mysql-connector-java</artifactId>
