@@ -20,10 +20,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Enum for NIBRS OffenseSegment Codes.
@@ -129,14 +131,18 @@ public enum OffenseCode {
 	private CrimeAgainstCode crimeAgainst;
 	
 	private static final Map<String,OffenseCode> ENUM_MAP;
+	private static final Set<String> CODE_SET;  
 	
-	 static {
-	        Map<String,OffenseCode> map = new HashMap<String, OffenseCode>();
-	        for (OffenseCode instance : OffenseCode.values()) {
-	            map.put(instance.code.toLowerCase(),instance);
-	        }
-	        ENUM_MAP = Collections.unmodifiableMap(map);
-	    }
+	static {
+		Map<String,OffenseCode> map = new HashMap<String, OffenseCode>();
+		for (OffenseCode instance : OffenseCode.values()) {
+		    map.put(instance.code.toLowerCase(),instance);
+		}
+		ENUM_MAP = Collections.unmodifiableMap(map);
+		
+		CODE_SET = Arrays.stream(values()).map(item->item.code)
+				.collect(Collectors.toSet()); 
+	}
 
 	private OffenseCode(String code, String description, String group
 			, CrimeAgainstCode crimeAgainstCode) {
@@ -151,15 +157,11 @@ public enum OffenseCode {
 	}
 
 	public static final Set<String> codeSet() {
-		Set<String> ret = new HashSet<>();
-		for (OffenseCode v : values()) {
-			ret.add(v.code);
-		}
-		return ret;
+		return CODE_SET;
 	}
 	
 	public static final OffenseCode forCode(String code) {
-		return ENUM_MAP.get(code.toLowerCase());
+		return ENUM_MAP.get(StringUtils.lowerCase(code));
 	}
 	
 	public static final boolean isCrimeAgainstPersonCode(String code) {
