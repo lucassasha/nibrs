@@ -17,7 +17,7 @@ package org.search.nibrs.stagingdata.repository;
 
 import java.util.Map;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public interface AgencyRepositoryCustom{
