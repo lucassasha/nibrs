@@ -205,8 +205,8 @@ DEFAULT_AGE_GROUP_FUNCTION_FACTORY <- list(
 #' @return a list with all the dimensional database tables, as tibbles
 #' @export
 loadDimensionalFromStagingDatabase <- function(
-  stagingConn=DBI::dbConnect(RMariaDB::MariaDB(), host="localhost", dbname="search_nibrs_staging", username="root"),
-  dimensionalConn=DBI::dbConnect(RMariaDB::MariaDB(), host="localhost", dbname="search_nibrs_dimensional", username="root"),
+  stagingConn=DBI::dbConnect(RMariaDB::MariaDB(), host="localhost", dbname="search_nibrs_staging", username="root", password="mysqladmin"),
+  dimensionalConn=DBI::dbConnect(RMariaDB::MariaDB(), host="localhost", dbname="main_nibrs_dimensional", username="root", password="mysqladmin"),
   writeToDatabase=TRUE, ageGroupFunctionFactory=NULL, categoryEnhancementFunctionFactory=NULL,
   sampleFraction=NULL, seed=12341234) {
 
@@ -1023,17 +1023,17 @@ loadDimensionalFromObjectLists <- function(
     if (attr(ddf, 'type') == 'CT') {
       # note: "create index if not exists" only works on MariaDB...
       writeLines(paste0('Creating PK for code table ', tableName))
-      dbExecute(dimensionalConn, paste0('create unique index if not exists ', tableName, '_pk on ', tableName, ' (', tableName, 'ID)'))
+      dbExecute(dimensionalConn, paste0("create unique index if not (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE index_name='", tableName, "_pk' and table_name= '", tableName,"')"))
     } else {
       ddf %>% head(0) %>% select_if(~!(is.double(.x) | is.Date(.x))) %>% colnames() %>% head(63) %>% walk(function(cnm) {
         # head(63) because MariaDB only supports creating indexes for 64 columns
         writeLines(paste0('Creating index for FK ', cnm))
-        dbExecute(dimensionalConn, paste0('create index if not exists idx_', cnm, ' on ', tableName, ' (', cnm, ')'))
+        dbExecute(dimensionalConn, paste0("create index if not (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE index_name='idx_", cnm, "' and table_name='", tableName, "')"))
       })
     }
   })
 
-  dbExecute(dimensionalConn, paste0('create index if not exists idx_AgencyTypeID on Agency (AgencyTypeID)'))
+  dbExecute(dimensionalConn, paste0("create index if not (SELECT COUNT(1) FROM INFORMATION_SCHEMA.STATISTICS WHERE index_name='idx_AgencyTypeID' and table_name='Agency')"))
 
   ret
 
@@ -1109,3 +1109,5 @@ enhanceDimensionTables <- function(dimensionTables, categoryEnhancementFunctionF
   })
 
 }
+
+
