@@ -37,6 +37,7 @@ applyStagingEdits <- function(
                  select(AdministrativeSegmentID, IncidentNumber, ReportTimestamp, SegmentActionTypeTypeID), by='IncidentNumber') %>%
     group_by(IncidentNumber)
 
+  writelines(paste0("editedIncidents row count: ", nrow(editedIncidents)))
   latestEdits <- editedIncidents %>%
     filter(ReportTimestamp==max(ReportTimestamp)) %>%
     # it's possible that timestamps don't have adequate resolution to produce a single "latest record". when this happens, we select
@@ -45,6 +46,7 @@ applyStagingEdits <- function(
     filter(AdministrativeSegmentID==max(AdministrativeSegmentID)) %>%
     ungroup()
 
+  writelines(paste0("latestEdits row count: ", nrow(latestEdits)))
   editedIncidents <- editedIncidents %>% ungroup()
 
   # where the latest (by ReportTimestamp) admin segment record has a action type of 2 (delete), then
