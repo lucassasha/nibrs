@@ -1040,10 +1040,11 @@ loadDimensionalFromObjectLists <- function(
 }
 
 createIndexIfNotExists<- function(dimensionalConn, tableName, indexName, columnName){
-	isIndexExists = dbExecute(dimensionalConn, paste0("select count(*) > 0 from information_schema.statistics where table_name = '",  tableName, "' and index_name='", indexName, "' and table_schema = database()"))
+	isIndexExists = dbGetQuery(dimensionalConn, paste0("select count(*) > 0 from information_schema.statistics where table_name = '",  tableName, "' and index_name='", indexName, "' and table_schema = database()"))
 	
 	if (!isIndexExists){
 		createIndexStatement = paste0('create index ', indexName, ' on ', tableName, '(', columnName, ');')
+		writeLines(createIndexStatement)
 		dbExecute(dimensionalConn, createIndexStatement)
 	}
 }
