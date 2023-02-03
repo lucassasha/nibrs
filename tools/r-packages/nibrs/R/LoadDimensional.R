@@ -1043,7 +1043,8 @@ loadDimensionalFromObjectLists <- function(
 
 getCreateIndexStatment<- function(tableName, indexName, columnName){
 	exists = paste0("set @x := (select count(*) from information_schema.statistics where table_name = '",  tableName, "' and index_name='", indexName, "' and table_schema = database());")
-	sql = paste0("set @sql := if( @x > 0, 'select ''Index exists.''', 'create index on ", tableName, ' (', columnName, ");');")
+	createIndexStatement = paste0("'create index ", indexName, " on ", tableName, "(", columnName, ");'")
+	sql = paste0("set @sql := if( @x > 0, 'select ''Index exists.''', ", createIndexStatement, ");")
 	result = paste0(exists, 
 			sql, 
 			'PREPARE stmt FROM @sql;', 
