@@ -1049,6 +1049,7 @@ getCreateIndexStatment<- function(tableName, indexName, columnName){
 			sql, 
 			'PREPARE stmt FROM @sql;', 
 			'EXECUTE stmt;')
+	writeLines(result)
 	return(result)
 }
 #' @import dplyr
