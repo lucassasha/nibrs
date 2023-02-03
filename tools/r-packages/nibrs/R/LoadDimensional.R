@@ -1023,17 +1023,17 @@ loadDimensionalFromObjectLists <- function(
     if (attr(ddf, 'type') == 'CT') {
       # note: "create index if not exists" only works on MariaDB...
       writeLines(paste0('Creating PK for code table ', tableName))
-	  createIndexStatement(dimensionalConn, tableName, paste0(tableName,'_pk'), paste0(tableName, 'ID'))
+	  createIndexIfNotExists(dimensionalConn, tableName, paste0(tableName,'_pk'), paste0(tableName, 'ID'))
     } else {
       ddf %>% head(0) %>% select_if(~!(is.double(.x) | is.Date(.x))) %>% colnames() %>% head(63) %>% walk(function(cnm) {
         # head(63) because MariaDB only supports creating indexes for 64 columns
         writeLines(paste0('Creating index for FK ', cnm))
-		createIndexStatement(dimensionalConn, tableName, paste0('idx_', cnm), cnm)
+		createIndexIfNotExists(dimensionalConn, tableName, paste0('idx_', cnm), cnm)
       })
     }
   })
 
-  createIndexStatement(dimensionalConn, 'Agency', 'idx_AgencyTypeID', 'AgencyTypeID')
+  createIndexIfNotExists(dimensionalConn, 'Agency', 'idx_AgencyTypeID', 'AgencyTypeID')
 
   ret
 
