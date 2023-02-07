@@ -32,17 +32,17 @@ applyStagingEdits <- function(
 
   editedIncidents <- factTables$AdministrativeSegment %>%
 #    filter(SegmentActionTypeTypeID != 3) %>%
-    select(IncidentNumber, AgencyID) %>% distinct() %>%
+    select(IncidentNumber) %>% distinct() %>%
     inner_join(factTables$AdministrativeSegment %>%
-                 select(AdministrativeSegmentID, IncidentNumber, ReportTimestamp, SegmentActionTypeTypeID, AgencyID), by='IncidentNumber, AgencyID') %>%
-    group_by(IncidentNumber, AgencyID)
+                 select(AdministrativeSegmentID, IncidentNumber, ReportTimestamp, SegmentActionTypeTypeID), by='IncidentNumber') %>%
+    group_by(IncidentNumber)
 
   writeLines(paste0("editedIncidents row count: ", nrow(editedIncidents)))
   latestEdits <- editedIncidents %>%
     filter(ReportTimestamp==max(ReportTimestamp)) %>%
     # it's possible that timestamps don't have adequate resolution to produce a single "latest record". when this happens, we select
     # from among the ties using the higher PK ID value (which will work if the table uses auto-incremented PKs)
-    group_by(IncidentNumber, AgencyID, ReportTimestamp) %>%
+    group_by(IncidentNumber, ReportTimestamp) %>%
     filter(AdministrativeSegmentID==max(AdministrativeSegmentID)) %>%
     ungroup()
 
