@@ -36,6 +36,8 @@ public class IncidentPointer implements Serializable {
 	private String submissionMonth; 
 	private String submissionYear; 
 	private Boolean fbiSubmissionAccepted;
+	private String faultCode;
+	private LocalDateTime fbiSubmissionTimestamp;
 	private LocalDateTime reportTimestamp; 
 	
 	public IncidentPointer() {
@@ -53,7 +55,9 @@ public class IncidentPointer implements Serializable {
 			String submissionMonth, 
 			String submissionYear, 
 			LocalDateTime reportTimestamp, 
-			Boolean fbiSubmissionAccepted) {
+			Boolean fbiSubmissionAccepted, 
+			String faultCode, 
+			LocalDateTime fbiSubmissionTimestamp) {
 		this();
 		this.primaryKey = primaryKey;
 		this.reportType = ReportType.valueOf(reportType);
@@ -67,6 +71,8 @@ public class IncidentPointer implements Serializable {
 		this.submissionYear = submissionYear;
 		this.reportTimestamp = reportTimestamp;
 		this.fbiSubmissionAccepted = fbiSubmissionAccepted;
+		this.faultCode = faultCode; 
+		this.fbiSubmissionTimestamp = fbiSubmissionTimestamp;
 	}
 	public IncidentPointer(Integer primaryKey, String incidentIdentifier) {
 		this();
@@ -164,5 +170,21 @@ public class IncidentPointer implements Serializable {
 		else {
 			return FbiSubmissionStatus.REJECTED.toString(); 
 		}
+	}
+
+	public String getFaultCode() {
+		return faultCode;
+	}
+
+	public void setFaultCode(String faultCode) {
+		this.faultCode = faultCode;
+	}
+
+	public LocalDateTime getFbiSubmissionTimestamp() {
+		return fbiSubmissionTimestamp;
+	}
+
+	public void setFbiSubmissionTimestamp(LocalDateTime fbiSubmissionTimestamp) {
+		this.fbiSubmissionTimestamp = fbiSubmissionTimestamp;
 	}
 }

@@ -16,7 +16,7 @@
 
 -->
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 	<head>
 		<title>Group A Incident Detail</title>
 		<th:block th:include="fragments/general.html :: headerfiles"></th:block>
@@ -584,9 +584,30 @@
 		      </div>
 	      </div>
 		        	
+        <script th:inline="javascript" sec:authorize="isAuthenticated()">
+          /*<![CDATA[*/
+            var _csrf_token = /*[[${_csrf.token}]]*/ '';
+            var _csrf_param_name = /*[[${_csrf.parameterName}]]*/ '';
+          /*]]>*/
+        </script>     
 		    <script th:inline="javascript">
+          /*<![CDATA[*/
+            var context = /*[[@{/}]]*/ '';
+            var administrativeSegmentId = /*[[${administrativeSegment.administrativeSegmentId}]]*/ null;
+          /*]]>*/
 		    	$(function(){
-		    		
+            $('#portalContent').off('click', '#resubmitButton').on('click', '#resubmitButton',function() {
+                $(this).prop('disabled', true);
+                var requestData = {
+                  "administrativeSegmentId": administrativeSegmentId
+                };
+                if (typeof _csrf_param_name !== 'undefined'){ 
+                  requestData[_csrf_param_name] = _csrf_token;
+                } 
+                xhr = $.post( context +"submission/incidentReport", requestData, function(data) {
+                  bootpopup.alert(data, "Resubmission Progress");
+                }).fail(ojbc.displayFailMessage);
+            });
 		    	});
 		    </script>
 	    </div>

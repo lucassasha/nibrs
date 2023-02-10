@@ -26,7 +26,7 @@
 	</head>
 	<body>
 	   <!-- Begin page content -->
-	   <div th:fragment="resultsPage" class="container">
+	   <div th:fragment="resultsPage">
 	      <nav aria-label="breadcrumb">
 	           <ol class="breadcrumb">
 	           <li class="breadcrumb-item"><a th:href="@{/home}">Home</a></li>
@@ -36,7 +36,6 @@
 	      <form th:replace="incident/incidentSearchForm.html :: incidentSearchFormContent" th:object="${incidentSearchRequest}">
 	      </form>
 	      <hr/>
-	       
 	      <div id="searchResultsList" th:fragment="resultsList" >
 		      <div class="alert alert-secondary" role="alert"
 		        th:if="${incidentSearchResult != null && incidentSearchResult.totalCount != incidentSearchResult.returnedCount}"
@@ -53,7 +52,9 @@
 								<th>Submission Date</th>
 								<th>UCR Offense Type</th>
 								<th>Report Type</th>
-								<th>FBI Status</th>
+								<th th:if="${allowSubmitToFbi}">FBI Status</th>
+								<th th:if="${allowSubmitToFbi}">Fault Code</th>
+								<th th:if="${allowSubmitToFbi}">FBI Submission Time Stamp</th>
 								<th>PCT Time Stamp</th>
 								<th>Primary Key</th>
 							</tr>
@@ -74,133 +75,147 @@
 				
 					      <!-- Modal footer -->
 					      <div class="modal-footer">
+							     <button type="button" class="btn btn-primary btn-sm d-none" id="resubmitButton">Resubmit</button>
 							     <button type="button" class="btn btn-primary btn-sm" id="printButton" onclick="js:window.print()">Print</button>
 							     <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
 					      </div>
 	         		</div>
 				    </div>
 			    </div>
-	      </div>
 	
- 		  <script th:inline="javascript">
-		       /*<![CDATA[*/
-		          var context = /*[[@{/}]]*/ '';
-	            var offenseCodeMapping = /*[[${offenseCodeMapping}]]*/ []; 
-	            var allowSubmitToFbi = /*[[${allowSubmitToFbi}]]*/ false;
-		        /*]]>*/
-	
-		       $(function(){
-			            
-		          $.fn.dataTable.moment( 'MM/YYYY' );
-		        
-		          table = $('#searchResultsTable').DataTable({
-	              ajax: context +"incidents/pointers",
-	              rowId: "primaryKey",
-	              stateSave: true,
-	              columns: [
-	                  { "data": "incidentIdentifier" },
-	                  { "data": "agencyName" },
-	                  { "data": "incidentDate" },
-	                  { "data": "submissionDateString" },
-	                  { "data": "ucrOffenseCodeTypeId" },
-	                  { "data": "reportType" },
-	                  { "data": "fbiStatus"}, 
-	                  { "data": "reportTimestamp", "visible":false}, 
-	                  { "data": "primaryKey", "visible":false}
-	              ], 
-	              buttons: [
-	                  {
-	                      extend: 'excelHtml5',
-	                      title:'Incidents',
-	                      exportOptions: {
-	                          columns: ':visible'
-	                      }
-	                  },
-	                  {
-	                      extend: 'csvHtml5',
-	                      title:'Incidents',
-	                      exportOptions: {
-	                          columns: ':visible'
-	                      }
-	                  },
-	                  {
-	                      extend: 'pdfHtml5',
-	                      title:'Incidents',
-	                      orientation:'landscape', 
-	                      exportOptions: {
-	                          columns: ':visible'
-	                      }
-	                  },
-	                  'colvis'
-	              ],
-	              deferRender: true,
-		            responsive: true, 
-		            fixedHeader: { header: true },
-								columnDefs: [ 
-								    {
-								         "targets": [4],
-								         "render": function ( data, type, row, meta ) {
-								             if (offenseCodeMapping.hasOwnProperty(data)){
-								               return offenseCodeMapping[data];
-								             }
-								             else{
-								               return data;
-								             }
-								         }
-								    },
-								    {
-								         "targets": [5],
-								         "render": function ( data, type, row, meta ) {
-								             if (data === 'GroupA'){
-								               return 'Group A';
-								             }
-								             else if (data === 'GroupB' ){
-								               return 'Group B';
-								             }
-								             else {
-								            	 return data;
-								             }
-								         }
-								    }
-								],
-	              initComplete: function(settings, json) {
-	                  table.buttons().container()
-	                    .appendTo( '#searchResultsTable_length' ).addClass("mr-4");
-                }
-
-		          });
-		          
-		          
-		          if (!allowSubmitToFbi){
-		        	  table.columns( [6] ).visible( false );
-		          }
-		          
-		          $('[data-toggle="tooltip"]').tooltip({
-		              trigger : 'hover'
-		          });   
+		 		  <script th:inline="javascript">
+				       /*<![CDATA[*/
+				          var context = /*[[@{/}]]*/ '';
+			            var offenseCodeMapping = /*[[${offenseCodeMapping}]]*/ []; 
+			            var allowSubmitToFbi = /*[[${allowSubmitToFbi}]]*/ false;
+				        /*]]>*/
+			
+				       $(function(){
+					            
+				          $.fn.dataTable.moment( 'MM/YYYY' );
+				        
+				          table = $('#searchResultsTable').DataTable({
+			              ajax: context +"incidents/pointers",
+			              rowId: "primaryKey",
+			              stateSave: true,
+			              columns: [
+			                  { "data": "incidentIdentifier" },
+			                  { "data": "agencyName" },
+			                  { "data": "incidentDate" },
+			                  { "data": "submissionDateString" },
+			                  { "data": "ucrOffenseCodeTypeId" },
+			                  { "data": "reportType" },
+			                  { "data": "fbiStatus"}, 
+			                  { "data": "faultCode"}, 
+			                  { "data": "fbiSubmissionTimestamp"}, 
+			                  { "data": "reportTimestamp", "visible":false}, 
+			                  { "data": "primaryKey", "visible":false}
+			              ], 
+			              buttons: [
+			                  {
+			                      extend: 'excelHtml5',
+			                      title:'Incidents',
+			                      exportOptions: {
+			                          columns: ':visible'
+			                      }
+			                  },
+			                  {
+			                      extend: 'csvHtml5',
+			                      title:'Incidents',
+			                      exportOptions: {
+			                          columns: ':visible'
+			                      }
+			                  },
+			                  {
+			                      extend: 'pdfHtml5',
+			                      title:'Incidents',
+			                      orientation:'landscape', 
+			                      exportOptions: {
+			                          columns: ':visible'
+			                      }
+			                  },
+			                  'colvis'
+			              ],
+			              deferRender: true,
+				            responsive: true, 
+				            fixedHeader: { header: true },
+										columnDefs: [ 
+										    {
+										         "targets": [4],
+										         "render": function ( data, type, row, meta ) {
+										             if (offenseCodeMapping.hasOwnProperty(data)){
+										               return offenseCodeMapping[data];
+										             }
+										             else{
+										               return data;
+										             }
+										         }
+										    },
+										    {
+										         "targets": [5],
+										         "render": function ( data, type, row, meta ) {
+										             if (data === 'GroupA'){
+										               return 'Group A';
+										             }
+										             else if (data === 'GroupB' ){
+										               return 'Group B';
+										             }
+										             else {
+										            	 return data;
+										             }
+										         }
+										    }
+										],
+			              initComplete: function(settings, json) {
+			                  table.buttons().container()
+			                    .appendTo( '#searchResultsTable_length' ).addClass("mr-4");
+		                }
 		
-		                  
-		          $('#searchResultsTable tbody').on('dblclick', 'tr',function() {
-		            table.$('tr.selected').removeClass('selected');
-		            $(this).addClass('selected');  
-		
-		            var rowData = table.row(this).data();
-		            var reportType = rowData.reportType; 
-		            xhr = $.get( context +"incidents/" + reportType + "/" + $(this).attr("id"), function(data) {
-		              $('#reportDetailModal .modal-body').html(data);
-		              
-		              if (reportType === "A"){
-		                $('#reportDetailModal .modal-title').html("Group A Incident");
-		              }
-		              else if (reportType === "B"){
-		                $('#reportDetailModal .modal-title').html("Group B Arrest");
-		              }
-		              $('#reportDetailModal').modal('show');
-		            }).fail(ojbc.displayFailMessage);
-		          });
-		        }); 
-		
-      	</script>
+				          });
+				          
+				          
+				          if (!allowSubmitToFbi){
+				        	  table.columns( [6] ).visible( false );
+				        	  table.columns( [7] ).visible( false );
+				        	  table.columns( [8] ).visible( false );
+				          }
+				          
+				          $('[data-toggle="tooltip"]').tooltip({
+				              trigger : 'hover'
+				          });   
+				
+				                  
+				          $('#searchResultsTable tbody').on('dblclick', 'tr',function() {
+				            table.$('tr.selected').removeClass('selected');
+				            $(this).addClass('selected');  
+				
+				            var rowData = table.row(this).data();
+				            var reportType = rowData.reportType; 
+				            var fbiStatus = rowData.fbiStatus
+				            xhr = $.get( context +"incidents/" + reportType + "/" + $(this).attr("id"), function(data) {
+				              $('#reportDetailModal .modal-body').html(data);
+				              
+				              if (reportType === "A"){
+				                $('#reportDetailModal .modal-title').html("Group A Incident");
+				              }
+				              else if (reportType === "B"){
+				                $('#reportDetailModal .modal-title').html("Group B Arrest");
+				              }
+				              
+				              if (fbiStatus === "Rejected" && !!rowData.faultCode && allowSubmitToFbi){
+				                $('#resubmitButton').prop('disabled', false).removeClass('d-none');
+				              }
+				              else{
+				            	  $('#resubmitButton').addClass('d-none');
+				              }
+				              $('#reportDetailModal').modal('show');
+				            }).fail(ojbc.displayFailMessage);
+				          });
+				        }); 
+				
+		      	</script>
+     	  </div>
+      	
 	  </div>
 	
 	</body>

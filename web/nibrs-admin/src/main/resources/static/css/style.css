@@ -435,6 +435,11 @@ styles below would be for that*/
     border-radius: 5px;
 }
 
+.modal-open .modal {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 ul.inline { display:inline-block; padding:0; text-align:left }
 ul.inline li { display:inline }
 ul.inline li a { white-space:nowrap}

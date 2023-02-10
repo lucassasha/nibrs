@@ -104,6 +104,9 @@
        </div>
        
        <script th:inline="javascript">
+		      /*<![CDATA[*/
+						var incidentSearchRequest = /*[[${incidentSearchRequest}]]*/ null;
+		      /*]]>*/
           $(function(){
             $('#incidentDateRangeStartDate').datepicker({
                uiLibrary: 'bootstrap4', size: 'small'
@@ -121,7 +124,9 @@
             $('[data-toggle="popover"]').popover(); 
             $('.date').mask('99/99/9999');
             
-            refreshAgencyDropDown();
+            if (!incidentSearchRequest.agencyIds?.length){
+             refreshAgencyDropDown();
+            }
             
             $('#portalContent').on('change', '#searchForm #stateCode', function(){
                 console.log("stateCode changed to " + $('#stateCode').val()); 
@@ -151,6 +156,7 @@
             });
 
             function refreshAgencyDropDown(){
+            	  console.log("refreshAgencyDropDown called"); 
                 stateCode = $('#stateCode').val(); 
                 xhr = $.get( context +"incidents/agencies", {stateCode: stateCode} , function(data) {
                   $('#agencyIds').empty();

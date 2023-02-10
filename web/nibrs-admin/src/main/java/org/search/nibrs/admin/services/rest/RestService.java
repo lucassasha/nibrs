@@ -244,6 +244,41 @@ public class RestService{
 		
 		return response; 
 	}
+	public String generateArrestReportSubmission(Integer arrestReportSegmentId) {
+		log.info("arrestReportSegment: " + arrestReportSegmentId);
+		
+		String response = ""; 
+		try { 
+			response = webClient.post().uri("submissions/trigger/groupb/" + arrestReportSegmentId)
+					.retrieve()
+					.bodyToMono(String.class)
+					.block();
+		}
+		catch(Throwable e) {
+			log.error("Got error when calling the service submissions/trigger/groupb/" + arrestReportSegmentId, e);
+			response = "Failed to process the request, please report the error or check back later."; 
+		}
+		
+		return response; 
+	}
+	
+	public String generateIncidentReportSubmission(Integer administrativeSegmentId) {
+		log.info("administrativeSegmentId: " + administrativeSegmentId);
+		
+		String response = ""; 
+		try { 
+			response = webClient.post().uri("submissions/trigger/groupa/" + administrativeSegmentId)
+					.retrieve()
+					.bodyToMono(String.class)
+					.block();
+		}
+		catch(Throwable e) {
+			log.error("Got error when calling the service /submissions/trigger/groupa/" + administrativeSegmentId, e);
+			response = "Failed to process the request, please report the error or check back later."; 
+		}
+		
+		return response; 
+	}
 	
 	public String deleteByIncidentDeleteRequest(IncidentDeleteRequest incidentDeleteRequest) {
 		

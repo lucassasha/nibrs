@@ -40,7 +40,7 @@ public class IncidentSearchResult implements Serializable {
 		
 		this.setEligibleFbiSubmissionCount(incidentPointers.stream()
 				.filter(i-> i.getOffenseCode() == null || !i.getOffenseCode().equalsIgnoreCase("90I"))
-				.filter(i->i.getFbiSubmissionAccepted() == null )
+				.filter(i->i.getFbiSubmissionAccepted() == null)
 				.count());
 		
 		if (getTotalCount() > sizeLimit) {
