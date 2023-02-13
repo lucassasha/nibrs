@@ -71,25 +71,27 @@ public interface ArrestReportSegmentRepository extends JpaRepository<ArrestRepor
 	List<Integer> findIdsByOriAndArrestDate(String ori, Integer year, Integer month, Integer ownerId);
 
 	@Query("SELECT DISTINCT a.arrestReportSegmentId from ArrestReportSegment a "
-			+ "INNER JOIN a.ucrOffenseCodeType u "
+			+ "LEFT JOIN a.submission s "
+			+ "LEFT JOIN a.ucrOffenseCodeType u "
 			+ "WHERE u.nibrsCode != '90I' AND "
 			+ "		(?1 = null OR a.ori in (?1)) AND "
 			+ "		(?4 = null OR a.agency.agencyId in (?4)) AND "
 			+ "		(?2 = null OR cast(concat(a.yearOfTape, '-', a.monthOfTape, '-01') as date) >= ?2) AND "
 			+ "		(?3 = null OR cast(concat(a.yearOfTape, '-', a.monthOfTape, '-01') as date) <= ?3) AND "
-			+ "     ( a.submission = null OR (a.submission.acceptedIndicator=0 AND a.submission.faultCode is not null ))"
+			+ "     ( s = null OR (s.acceptedIndicator=0 AND s.faultCode is not null ))"
 			+ "ORDER BY a.arrestReportSegmentId asc ")
 	List<Integer> findIdsByOriListAndSubmissionDateRange(List<String> ori, Date startDate, 
 			Date endDate, List<Integer> agencyIds);
 	
 	@Query("SELECT count(DISTINCT a.arrestReportSegmentId) from ArrestReportSegment a "
-			+ "INNER JOIN a.ucrOffenseCodeType u "
+			+ "LEFT JOIN a.submission s "
+			+ "LEFT JOIN a.ucrOffenseCodeType u "
 			+ "WHERE u.nibrsCode != '90I' AND "
 			+ "		(?1 = null OR a.ori in (?1)) AND "
 			+ "		(?4 = null OR a.agency.agencyId in (?4)) AND "
 			+ "		(?2 = null OR cast(concat(a.yearOfTape, '-', a.monthOfTape, '-01') as date) >= ?2) AND "
 			+ "		(?3 = null OR cast(concat(a.yearOfTape, '-', a.monthOfTape, '-01') as date) <= ?3) AND "
-			+ "     ( a.submission = null OR (a.submission.acceptedIndicator=0 AND a.submission.faultCode is not null ) )"
+			+ "     ( s = null OR (s.acceptedIndicator=0 AND s.faultCode is not null )) "
 			)
 	long countByOriListAndSubmissionDateRange(List<String> oris, Date startDate, 
 			Date endDate, List<Integer> agencyIds);
