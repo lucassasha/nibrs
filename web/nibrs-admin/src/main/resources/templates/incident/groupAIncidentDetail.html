@@ -605,7 +605,9 @@
                   requestData[_csrf_param_name] = _csrf_token;
                 } 
                 xhr = $.post( context +"submission/incidentReport", requestData, function(data) {
-                  bootpopup.alert(data, "Resubmission Progress");
+                  bootpopup.alert(data, "Resubmission Progress", function(){
+                	  $('.modal').css('overflow-y', 'auto');
+                  });
                 }).fail(ojbc.displayFailMessage);
             });
 		    	});
