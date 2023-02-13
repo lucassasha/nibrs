@@ -60,6 +60,9 @@
 							<th>UCR Offense Type</th>
 							<th>Report Type</th>
 							<th>FBI Status</th>
+              <th th:if="${allowSubmitToFbi}">Fault Code</th>
+              <th th:if="${allowSubmitToFbi}">FBI Submission Time Stamp</th>
+              <th>PCT Time Stamp</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -80,6 +83,8 @@
 				
 					      <!-- Modal footer -->
 					      <div class="modal-footer">
+                   <button type="button" class="btn btn-primary btn-sm d-none" id="resubmitButton">Resubmit</button>
+                   <button type="button" class="btn btn-primary btn-sm" id="printButton" onclick="js:window.print()">Print</button>
 							     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 					      </div>
           		</div>
@@ -89,8 +94,8 @@
 	
 	 		<script th:inline="javascript">
          /*<![CDATA[*/
-	        var context = [[@{/}]];
-            var offenseCodeMapping = [[${offenseCodeMapping}]]; 
+	        var context = /*[[@{/}]]*/ '';
+          var offenseCodeMapping = /*[[${offenseCodeMapping}]]*/ null; 
          /*]]>*/
 	       $(function(){
 		            
@@ -109,6 +114,8 @@
                  { "data": "ucrOffenseCodeTypeId" },
                  { "data": "reportType" },
                  { "data": "fbiStatus" }, 
+                 { "data": "faultCode"}, 
+                 { "data": "fbiSubmissionTimestamp"}, 
                  { "data": "primaryKey", "visible":false}
              ], 
              buttons: [
@@ -187,6 +194,7 @@
  
              var rowData = table.row($(this)).data();
              var reportType = rowData.reportType; 
+             var fbiStatus = rowData.fbiStatus
              xhr = $.get( context +"incidents/" + reportType + "/" + $(this).attr("id")   , function(data) {
                $('#reportDetailModal .modal-body').html(data);
                
@@ -195,6 +203,12 @@
                }
                else if (reportType === "B"){
                  $('#reportDetailModal .modal-title').html("Group B Arrest");
+               }
+               if (fbiStatus === "Rejected" && !!rowData.faultCode && allowSubmitToFbi){
+                   $('#resubmitButton').prop('disabled', false).removeClass('d-none');
+                 }
+                 else{
+                   $('#resubmitButton').addClass('d-none');
                }
                $('#reportDetailModal').modal('show');
              }).fail(ojbc.displayFailMessage);
