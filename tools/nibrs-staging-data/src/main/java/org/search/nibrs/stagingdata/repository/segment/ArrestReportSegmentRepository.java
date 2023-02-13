@@ -77,7 +77,7 @@ public interface ArrestReportSegmentRepository extends JpaRepository<ArrestRepor
 			+ "		(?4 = null OR a.agency.agencyId in (?4)) AND "
 			+ "		(?2 = null OR cast(concat(a.yearOfTape, '-', a.monthOfTape, '-01') as date) >= ?2) AND "
 			+ "		(?3 = null OR cast(concat(a.yearOfTape, '-', a.monthOfTape, '-01') as date) <= ?3) AND "
-			+ "     ( a.submission = null )"
+			+ "     ( a.submission = null OR (a.submission.acceptedIndicator=0 AND a.submission.faultCode is not null ))"
 			+ "ORDER BY a.arrestReportSegmentId asc ")
 	List<Integer> findIdsByOriListAndSubmissionDateRange(List<String> ori, Date startDate, 
 			Date endDate, List<Integer> agencyIds);
@@ -89,7 +89,7 @@ public interface ArrestReportSegmentRepository extends JpaRepository<ArrestRepor
 			+ "		(?4 = null OR a.agency.agencyId in (?4)) AND "
 			+ "		(?2 = null OR cast(concat(a.yearOfTape, '-', a.monthOfTape, '-01') as date) >= ?2) AND "
 			+ "		(?3 = null OR cast(concat(a.yearOfTape, '-', a.monthOfTape, '-01') as date) <= ?3) AND "
-			+ "     ( a.submission = null )"
+			+ "     ( a.submission = null OR (a.submission.acceptedIndicator=0 AND a.submission.faultCode is not null ) )"
 			)
 	long countByOriListAndSubmissionDateRange(List<String> oris, Date startDate, 
 			Date endDate, List<Integer> agencyIds);

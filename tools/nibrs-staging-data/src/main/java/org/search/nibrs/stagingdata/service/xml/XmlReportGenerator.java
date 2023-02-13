@@ -153,6 +153,17 @@ public class XmlReportGenerator {
 		writeGroupAIncidentReport(administrativeSegmentId);
 	}
 	
+	@Async
+	public void processGroupBSubmission(Integer arrestReportSegmentId) throws Exception{
+		
+		File directorty = new File(appProperties.getNibrsNiemDocumentFolder()); 
+		if (!directorty.exists()){
+			directorty.mkdirs(); 
+		}
+		
+		writeGroupBIncidentReport(arrestReportSegmentId);
+	}
+	
 	private void writeGroupAIncidentReports(SubmissionTrigger submissionTrigger) throws Exception {
 		
 		List<Integer> ids = administrativeSegmentRepository.findIdsByOriListAndSubmissionDateRange(
@@ -170,6 +181,13 @@ public class XmlReportGenerator {
 		writeAdministrativeSegmentToXml(administrativeSegment, appProperties.getNibrsNiemDocumentFolder());
 	}
 
+	private void writeGroupBIncidentReport(Integer arrestReportSegmentId) throws Exception {
+		log.info("Generating group B report for pkId " + arrestReportSegmentId);
+		ArrestReportSegment arrestReportSegment = arrestReportSegmentRepository.findByArrestReportSegmentId(arrestReportSegmentId);
+		
+		writeArrestReportSegmentToXml(arrestReportSegment, appProperties.getNibrsNiemDocumentFolder());
+	}
+	
 	public void writeAdministrativeSegmentToXml(AdministrativeSegment administrativeSegment, String rootFolder) {
 		try {
 			Document document = this.createGroupAIncidentReport(administrativeSegment);
@@ -204,7 +222,7 @@ public class XmlReportGenerator {
 			Document document = createGroupBArrestReport(arrestReportSegment);
 			
 			String fileName = rootFolder + "/GroupBArrestReport" + arrestReportSegment.getArrestTransactionNumber() + "-" + LocalDateTime.now().format(formatter) + ".xml";
-			
+			log.info("Writing the XML report for GroupB Arrest Report:\n " + arrestReportSegment.getArrestTransactionNumber() + " to " + fileName);
 			FileUtils.writeStringToFile(new File(fileName), XmlUtils.nodeToString(document), "UTF-8");			
 		}
 		catch (Exception e) {
