@@ -127,7 +127,14 @@ public class AdministrativeSegmentRepositorCustomImpl implements AdministrativeS
             		break; 
             	}
             }
-
+            
+        	if (incidentSearchRequest.getFbiSubmissionTimestampStart() != null) {
+        		predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(submissionJoin.get("submissionTimestamp"), incidentSearchRequest.getFbiSubmissionTimestampStart())));
+        	}
+        	if (incidentSearchRequest.getReportTimestampEndDate() != null) {
+        		predicates.add(criteriaBuilder.and(criteriaBuilder.lessThan(submissionJoin.get("submissionTimestamp"), incidentSearchRequest.getReportTimestampEndDate())));
+        	}
+        	
         	if (StringUtils.isNotBlank(incidentSearchRequest.getStateCode())) {
         		predicates.add(criteriaBuilder.and(criteriaBuilder.equal(root.get("agency").get("stateCode"), incidentSearchRequest.getStateCode())));
         	}
@@ -152,10 +159,10 @@ public class AdministrativeSegmentRepositorCustomImpl implements AdministrativeS
         	}
         	
         	if (incidentSearchRequest.getReportTimestampStartDate() != null) {
-        		predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(root.get("reportTimestamp"), incidentSearchRequest.getReportTimestampStartDate().atStartOfDay())));
+        		predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(root.get("reportTimestamp"), incidentSearchRequest.getReportTimestampStartDate())));
         	}
         	if (incidentSearchRequest.getReportTimestampEndDate() != null) {
-        		predicates.add(criteriaBuilder.and(criteriaBuilder.lessThan(root.get("reportTimestamp"), incidentSearchRequest.getReportTimestampEndDate().plusDays(1).atStartOfDay())));
+        		predicates.add(criteriaBuilder.and(criteriaBuilder.lessThan(root.get("reportTimestamp"), incidentSearchRequest.getReportTimestampEndDate())));
         	}
         	
         	if (incidentSearchRequest.getUcrOffenseCodeTypeId() != null) {

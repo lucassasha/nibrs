@@ -87,11 +87,20 @@
          </div>
          <div class="form-row">
            <label class="col-4 col-xl-2 col-form-label font-weight-bold text-right">PCT Tool Time Stamp </label>
-           <div class="col-8 col-xl-3"><input type="text" th:field="*{reportTimestampStartDate}" class="date" width="250" placeholder="From" th:errorclass="is-invalid"/></div>
+           <div class="col-8 col-xl-3"><input type="datetime-local" th:field="*{reportTimestampStartDate}" class="form-control form-control-sm" width="250" placeholder="From" th:errorclass="is-invalid"/></div>
            <label class="col-4 col-xl-1 col-form-label font-weight-bold text-right">To </label>
            <div class="col-8 col-xl-3">
-              <input type="text" th:field="*{reportTimestampEndDate}" class="date" width="250" placeholder="To"/>
+              <input type="datetime-local" th:field="*{reportTimestampEndDate}" class="form-control form-control-sm" width="250" placeholder="To"/>
            <div th:if="${#fields.hasErrors('reportTimestampStartDate')}" th:errors="*{reportTimestampStartDate}" class="invalid-feedback">PCT Tool Time Stamp error message</div>
+           </div>
+         </div>
+         <div class="form-row">
+           <label class="col-4 col-xl-2 col-form-label font-weight-bold text-right">FBI Submission Time Stamp </label>
+           <div class="col-8 col-xl-3"><input type="datetime-local" class="form-control form-control-sm" th:field="*{fbiSubmissionTimestampStart}" width="300" placeholder="From" th:errorclass="is-invalid"/></div>
+           <label class="col-4 col-xl-1 col-form-label font-weight-bold text-right">To </label>
+           <div class="col-8 col-xl-3">
+              <input type="datetime-local" class="form-control form-control-sm" th:field="*{fbiSubmissionTimestampEnd}" width="300" placeholder="To"/>
+           <div th:if="${#fields.hasErrors('fbiSubmissionTimestampStart')}" th:errors="*{fbiSubmissionTimestampStart}" class="invalid-feedback">FBI Submission Time Stamp error message</div>
            </div>
          </div>
          <div class="form-row mt-2">
@@ -112,12 +121,6 @@
                uiLibrary: 'bootstrap4', size: 'small'
             });
             $('#incidentDateRangeEndDate').datepicker({
-               uiLibrary: 'bootstrap4', size: 'small'
-            });
-            $('#reportTimestampStartDate').datepicker({
-               uiLibrary: 'bootstrap4', size: 'small'
-            });
-            $('#reportTimestampEndDate').datepicker({
                uiLibrary: 'bootstrap4', size: 'small'
             });
             $(".chosen-select").chosen();  

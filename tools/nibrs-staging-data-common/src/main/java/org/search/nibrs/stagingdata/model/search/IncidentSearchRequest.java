@@ -17,6 +17,7 @@ package org.search.nibrs.stagingdata.model.search;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,10 +39,10 @@ public class IncidentSearchRequest implements Serializable {
 	private LocalDate incidentDateRangeStartDate; 
 	@DateTimeFormat(pattern = "MM/dd/yyyy")
 	private LocalDate incidentDateRangeEndDate; 
-	@DateTimeFormat(pattern = "MM/dd/yyyy")
-	private LocalDate reportTimestampStartDate; 
-	@DateTimeFormat(pattern = "MM/dd/yyyy")
-	private LocalDate reportTimestampEndDate; 
+	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+	private LocalDateTime reportTimestampStartDate; 
+	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+	private LocalDateTime reportTimestampEndDate; 
 	private Integer ucrOffenseCodeTypeId; 
 	private String offenseCode; 
 
@@ -55,6 +56,11 @@ public class IncidentSearchRequest implements Serializable {
 	private Integer submissionEndMonth;
 	private Integer submissionEndYear; 
 	private FbiSubmissionStatus fbiSubmissionStatus;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+	private LocalDateTime fbiSubmissionTimestampStart; 
+	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+	private LocalDateTime fbiSubmissionTimestampEnd; 
 	
 	@Override
 	public String toString() {
@@ -210,17 +216,29 @@ public class IncidentSearchRequest implements Serializable {
 	public void setStateCode(String stateCode) {
 		this.stateCode = stateCode;
 	}
-	public LocalDate getReportTimestampStartDate() {
+	public LocalDateTime getReportTimestampStartDate() {
 		return reportTimestampStartDate;
 	}
-	public void setReportTimestampStartDate(LocalDate reportTimestampStartDate) {
+	public void setReportTimestampStartDate(LocalDateTime reportTimestampStartDate) {
 		this.reportTimestampStartDate = reportTimestampStartDate;
 	}
-	public LocalDate getReportTimestampEndDate() {
+	public LocalDateTime getReportTimestampEndDate() {
 		return reportTimestampEndDate;
 	}
-	public void setReportTimestampEndDate(LocalDate reportTimestampEndDate) {
+	public void setReportTimestampEndDate(LocalDateTime reportTimestampEndDate) {
 		this.reportTimestampEndDate = reportTimestampEndDate;
+	}
+	public LocalDateTime getFbiSubmissionTimestampStart() {
+		return fbiSubmissionTimestampStart;
+	}
+	public void setFbiSubmissionTimestampStart(LocalDateTime fbiSubmissionTimestampStart) {
+		this.fbiSubmissionTimestampStart = fbiSubmissionTimestampStart;
+	}
+	public LocalDateTime getFbiSubmissionTimestampEnd() {
+		return fbiSubmissionTimestampEnd;
+	}
+	public void setFbiSubmissionTimestampEnd(LocalDateTime fbiSubmissionTimestampEnd) {
+		this.fbiSubmissionTimestampEnd = fbiSubmissionTimestampEnd;
 	}
 	
 }
