@@ -244,7 +244,7 @@ public class SummaryReportController {
 			HttpServletResponse response, Map<String, Object> model) throws IOException{
 		log.info("get shrReports");
 		SupplementaryHomicideReport supplementaryHomicideReport = restClient.getSupplementaryHomicideReportByRequest(summaryReportRequest);
-		XSSFWorkbook workbook = supplementaryHomicideReportExporter.createWorkbook(supplementaryHomicideReport);
+		XSSFWorkbook workbook = supplementaryHomicideReportExporter.createWorkbook(supplementaryHomicideReport, true);
 		String fileName = getFileName("SupplementaryHomicideReport", supplementaryHomicideReport.getStateName(), supplementaryHomicideReport.getOri(), 
 				supplementaryHomicideReport.getYear(), supplementaryHomicideReport.getMonth());
 		downloadReport(response, workbook, fileName);

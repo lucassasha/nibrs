@@ -22,15 +22,17 @@ public class Person {
 	private String age; 
 	private String sex; 
 	private String race; 
+	private String stateRace; 
 	private String ethnicity;
 	public Person() {
 		super();
 	}
-	public Person(String age, String sex, String race, String ethnicity) {
+	public Person(String age, String sex, String race, String stateRace, String ethnicity) {
 		this();
 		this.age = age;
 		this.sex = sex;
 		this.race = race;
+		this.stateRace = stateRace;
 		this.ethnicity = ethnicity;
 	}
 	public String getAge() {
@@ -59,5 +61,11 @@ public class Person {
 	}
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+	}
+	public String getStateRace() {
+		return stateRace;
+	}
+	public void setStateRace(String stateRace) {
+		this.stateRace = stateRace;
 	}
 }
