@@ -37,7 +37,7 @@
 			<form class="needs-validation" action="#" th:object="${summaryReportRequest}" id="summaryReportRequestForm" method="post" novalidate>
 				<div class="form-row">
 					<label class="col-4 col-xl-2 col-form-label font-weight-bold text-right">Report Type</label>
-					<div class="col-8 col-xl-3 form-group">
+					<div class="col-8 col-xl-4 form-group">
 						<select name="reportType" id="reportType" class="form-control form-control-sm chosen-select custom-select" data-placeholder="Please select all that apply..." 
 							multiple required>
 						    <option th:each="summaryReportType : ${T(org.search.nibrs.admin.summaryreport.SummaryReportType).values()}"
