@@ -41,7 +41,7 @@
 						<select name="reportType" id="reportType" class="form-control form-control-sm chosen-select custom-select" data-placeholder="Please select all that apply..." 
 							multiple required>
 						    <option th:each="summaryReportType : ${T(org.search.nibrs.admin.summaryreport.SummaryReportType).values()}"
-						        th:value="${summaryReportType}" th:text="${summaryReportType.description}"></option>
+						        th:value="${summaryReportType}" th:text="${summaryReportType.description}" th:if="${!#strings.contains(summaryReportType, 'WithStateRace')} or ${useStateRaceInSummaryReport}"></option>
 						</select>
 						<div class="invalid-feedback">report type required</div>
 					</div>
@@ -91,10 +91,10 @@
 			</form>
       <script th:inline="javascript" sec:authorize="isAuthenticated()">
         /*<![CDATA[*/
-          var context = [[@{/}]];
+          var context = /*[[@{/}]]*/ '';
           var _csrf_token = /*[[${_csrf.token}]]*/ '';
           var _csrf_param_name = /*[[${_csrf.parameterName}]]*/ '';
-          var agencyMapping = [[${agencyMapping}]]; 
+          var agencyMapping = /*[[${agencyMapping}]]*/ null; 
         /*]]>*/
       </script>			
 	    <script type="text/javascript" th:src="@{/js/summaryReportForm.js}"></script>

@@ -214,7 +214,7 @@
 		     xhr[i].responseType = 'blob';
 //	    	 console.log("xhr[i]: " + xhr[i]); 
 		
-		     xhr[i].onload = function(e) {
+		     xhr[i].onload = function() {
 		         if (this.status === 200) {
 		             var blob = this.response;
 			    	 var fileName = "";
@@ -244,7 +244,7 @@
 	            	    content: [
 	            	        'An error occurred while processing your request. Please contact SEARCH at <a href="mailto:nibrs@search.org">nibrs@search.org</a> or try again later.'
 	            	        ],
-	            	    close: function(data,e) {}
+	            	    close: function() {}
 	            	 });
 		        }
 		      }

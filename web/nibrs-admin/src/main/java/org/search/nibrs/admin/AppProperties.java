@@ -31,6 +31,7 @@ public class AppProperties {
 	
 	private Boolean securityEnabled = false;
 	private Boolean allowAccessWithoutSamlToken = false;
+	private Boolean useStateRaceInSummaryReport = false;
 	private String signOutUrl = "/logoutSuccess"; 
 	private Boolean showUserInfoDropdown = false;
 	private Boolean demoLawEnforcementEmployerIndicator = true;
@@ -196,6 +197,14 @@ public class AppProperties {
 
 	public void setFlatFileToXmlFileConversionUpperLimit(Integer flatFileToXmlFileConversionUpperLimit) {
 		this.flatFileToXmlFileConversionUpperLimit = flatFileToXmlFileConversionUpperLimit;
+	}
+
+	public Boolean getUseStateRaceInSummaryReport() {
+		return useStateRaceInSummaryReport;
+	}
+
+	public void setUseStateRaceInSummaryReport(Boolean useStateRaceInSummaryReport) {
+		this.useStateRaceInSummaryReport = useStateRaceInSummaryReport;
 	}
 
 }

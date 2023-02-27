@@ -101,6 +101,8 @@ public class SummaryReportController {
 			model.put("agencyMapping", restService.getAgencies(authUser.getUserId()));
 			model.put("stateCodeMappingByOwner", restService.getStatesNoChache(ownerId));
 		}
+		
+		model.put("useStateRaceInSummaryReport", appProperties.getUseStateRaceInSummaryReport()); 
     	log.debug("Model: " + model);
     }
 
@@ -244,8 +246,19 @@ public class SummaryReportController {
 			HttpServletResponse response, Map<String, Object> model) throws IOException{
 		log.info("get shrReports");
 		SupplementaryHomicideReport supplementaryHomicideReport = restClient.getSupplementaryHomicideReportByRequest(summaryReportRequest);
-		XSSFWorkbook workbook = supplementaryHomicideReportExporter.createWorkbook(supplementaryHomicideReport, true);
+		XSSFWorkbook workbook = supplementaryHomicideReportExporter.createWorkbook(supplementaryHomicideReport, false);
 		String fileName = getFileName("SupplementaryHomicideReport", supplementaryHomicideReport.getStateName(), supplementaryHomicideReport.getOri(), 
+				supplementaryHomicideReport.getYear(), supplementaryHomicideReport.getMonth());
+		downloadReport(response, workbook, fileName);
+	}
+	
+	@PostMapping("/summaryReports/shrWithStateRaceReports")
+	public void getShrWithStateRaceReportsByRequest(@ModelAttribute SummaryReportRequest summaryReportRequest,
+			HttpServletResponse response, Map<String, Object> model) throws IOException{
+		log.info("get shrReports with state race codes");
+		SupplementaryHomicideReport supplementaryHomicideReport = restClient.getSupplementaryHomicideReportByRequest(summaryReportRequest);
+		XSSFWorkbook workbook = supplementaryHomicideReportExporter.createWorkbook(supplementaryHomicideReport, true);
+		String fileName = getFileName("SupplementaryHomicideReport-StateRace", supplementaryHomicideReport.getStateName(), supplementaryHomicideReport.getOri(), 
 				supplementaryHomicideReport.getYear(), supplementaryHomicideReport.getMonth());
 		downloadReport(response, workbook, fileName);
 	}
