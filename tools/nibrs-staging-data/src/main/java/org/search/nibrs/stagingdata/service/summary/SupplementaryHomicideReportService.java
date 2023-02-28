@@ -248,10 +248,12 @@ public class SupplementaryHomicideReportService {
 		Person victim= new Person(victimOffenderAssociation.getVictimSegment().getAgeString(), 
 				victimOffenderAssociation.getVictimSegment().getSexOfPersonType().getNibrsCode(),
 				victimOffenderAssociation.getVictimSegment().getRaceOfPersonType().getNibrsCode(), 
+				victimOffenderAssociation.getVictimSegment().getRaceOfPersonType().getStateCode(), 
 				victimOffenderAssociation.getVictimSegment().getEthnicityOfPersonType().getNibrsCode());
 		Person offender = new Person(victimOffenderAssociation.getOffenderSegment().getAgeString(), 
 				victimOffenderAssociation.getOffenderSegment().getSexOfPersonType().getNibrsCode(),
 				victimOffenderAssociation.getOffenderSegment().getRaceOfPersonType().getNibrsCode(), 
+				victimOffenderAssociation.getOffenderSegment().getRaceOfPersonType().getStateCode(), 
 				victimOffenderAssociation.getOffenderSegment().getEthnicityOfPersonType().getNibrsCode());;
 		
 		SupplementaryHomicideReportRow homicideReportRow = new SupplementaryHomicideReportRow();
