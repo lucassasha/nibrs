@@ -25,6 +25,7 @@ public class AsrRow implements Serializable{
 	private int[] maleAgeGroups; 
 	private int[] femaleAgeGroups;
 	private int[] raceGroups;
+	private int[] stateRaceGroups;
 	private int[] ethnicityGroups;
 	
 	public enum Race{W, B, I, A, P}
@@ -34,6 +35,14 @@ public class AsrRow implements Serializable{
 		super();
 		setRaceGroups(new int[Race.values().length]);
 		setEthnicityGroups(new int[Ethnicity.values().length]);
+	}
+	
+	public AsrRow(int stateRaceCodeMapSize) {
+		this();
+		
+		if (stateRaceCodeMapSize > 0) {
+			setStateRaceGroups(new int[stateRaceCodeMapSize]);
+		}
 	}
 	
 	@Override
@@ -71,5 +80,13 @@ public class AsrRow implements Serializable{
 
 	public void setEthnicityGroups(int[] ethnicityGroups) {
 		this.ethnicityGroups = ethnicityGroups;
+	}
+
+	public int[] getStateRaceGroups() {
+		return stateRaceGroups;
+	}
+
+	public void setStateRaceGroups(int[] stateRaceGroups) {
+		this.stateRaceGroups = stateRaceGroups;
 	}
 }

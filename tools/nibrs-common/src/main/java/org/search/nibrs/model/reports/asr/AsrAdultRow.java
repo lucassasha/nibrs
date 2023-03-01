@@ -45,6 +45,12 @@ public class AsrAdultRow extends AsrRow{
 		setFemaleAgeGroups(new int[AdultAgeGroup.values().length]);
 	}
 	
+	public AsrAdultRow(int stateRaceCodeMapSize) {
+		super(stateRaceCodeMapSize);
+		setMaleAgeGroups(new int[AdultAgeGroup.values().length]);
+		setFemaleAgeGroups(new int[AdultAgeGroup.values().length]);
+	}
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);

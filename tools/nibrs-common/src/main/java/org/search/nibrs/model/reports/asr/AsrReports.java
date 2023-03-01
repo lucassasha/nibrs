@@ -44,15 +44,19 @@ public class AsrReports implements Serializable{
 		
 	}
 	
-	public AsrReports(String ori, int year, int month) {
-		this();
-		this.ori = ori; 
-		this.year = year; 
-		this.month = month; 
+	public AsrReports(int stateRaceCodeMapSize) {
+		super();
+		for (int i = 0; i < adultRows.length; i++){
+			adultRows[i] = new AsrAdultRow(stateRaceCodeMapSize); 
+		}
+		for (int i = 0; i < juvenileRows.length; i++){
+			juvenileRows[i] = new AsrJuvenileRow(stateRaceCodeMapSize); 
+		}
+		
 	}
 	
-	public AsrReports(int year, int month) {
-		this();
+	public AsrReports(int year, int month, int stateRaceCodeMapSize) {
+		this(stateRaceCodeMapSize);
 		this.year = year; 
 		this.month = month; 
 	}

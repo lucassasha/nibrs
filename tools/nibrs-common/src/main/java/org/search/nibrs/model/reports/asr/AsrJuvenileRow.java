@@ -37,6 +37,14 @@ public class AsrJuvenileRow extends AsrRow{
 		setEthnicityGroups(new int[Ethnicity.values().length]);
 	}
 	
+	public AsrJuvenileRow(int stateRaceCodeMapSize) {
+		super(stateRaceCodeMapSize);
+		setMaleAgeGroups(new int[JuvenileAgeGroup.values().length]);
+		setFemaleAgeGroups(new int[JuvenileAgeGroup.values().length]);
+		setRaceGroups(new int[Race.values().length]);
+		setEthnicityGroups(new int[Ethnicity.values().length]);
+	}
+	
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);

@@ -30,6 +30,7 @@ public class AppProperties {
 	private Map<String, String> nonNumericAgeCodeMapping = new HashMap<>();
 	private Map<String, String> propertyCodeMapping = new HashMap<>();
 	private Map<String, String> locationCodeMapping = new HashMap<>();
+	private Map<String, Integer> stateRaceCodeMapping = new HashMap<>();
 	private Integer reportSearchResultsLimit = 10000;
 	private Integer summaryReportProcessingBatchSize = 500;
 
@@ -217,6 +218,14 @@ public class AppProperties {
 
 	public void setSummaryReportProcessingBatchSize(Integer summaryReportProcessingBatchSize) {
 		this.summaryReportProcessingBatchSize = summaryReportProcessingBatchSize;
+	}
+
+	public Map<String, Integer> getStateRaceCodeMapping() {
+		return stateRaceCodeMapping;
+	}
+
+	public void setStateRaceCodeMapping(Map<String, Integer> stateRaceCodeMapping) {
+		this.stateRaceCodeMapping = stateRaceCodeMapping;
 	}
 
 }

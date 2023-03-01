@@ -42,6 +42,7 @@ import org.search.nibrs.model.reports.asr.AsrRow.Ethnicity;
 import org.search.nibrs.model.reports.asr.AsrRow.Race;
 import org.search.nibrs.stagingdata.AppProperties;
 import org.search.nibrs.stagingdata.model.Agency;
+import org.search.nibrs.stagingdata.model.RaceOfPersonType;
 import org.search.nibrs.stagingdata.model.segment.ArrestReportSegment;
 import org.search.nibrs.stagingdata.model.segment.ArresteeSegment;
 import org.search.nibrs.stagingdata.model.segment.OffenseSegment;
@@ -197,7 +198,9 @@ public class AsrFormService {
 	}
 	
 	public AsrReports createAsrSummaryReportsByRequest(SummaryReportRequest summaryReportRequest) {
-		AsrReports asrReports = new AsrReports(summaryReportRequest.getIncidentYear(), summaryReportRequest.getIncidentMonth()); 
+		AsrReports asrReports = new AsrReports(summaryReportRequest.getIncidentYear(), 
+				summaryReportRequest.getIncidentMonth(), 
+				appProperties.getStateRaceCodeMapping().size()); 
 		
 		if (summaryReportRequest.getAgencyId() != null){
 			Optional<Agency> agency = agencyRepository.findById(summaryReportRequest.getAgencyId()); 
@@ -259,9 +262,13 @@ public class AsrFormService {
 			
 			if (asrAdultRowName != null) {
 				countToAdultAgeGroups(asrAdultRows, arrestReportSegment.getAverageAge(), arrestReportSegment.getSexOfPersonType().getNibrsCode(), asrAdultRowName);
-				countToRaceGroups(asrAdultRows, arrestReportSegment.getRaceOfPersonType().getNibrsCode(), asrAdultRowName.name(), AsrAdultRowName.class);
+				countToRaceGroups(asrAdultRows, arrestReportSegment.getRaceOfPersonType(), asrAdultRowName.name(), AsrAdultRowName.class);
 				countToEthnicityGroups(asrAdultRows, arrestReportSegment.getEthnicityOfPersonType().getNibrsCode(), 
 						asrAdultRowName.name(), AsrAdultRowName.class);
+				
+				if (appProperties.getStateRaceCodeMapping().size() > 0) {
+					countToStateRaceGroups(asrAdultRows, arrestReportSegment.getRaceOfPersonType(), asrAdultRowName.name(), AsrAdultRowName.class);
+				}
 			}
 		}
 		
@@ -276,9 +283,12 @@ public class AsrFormService {
 			
 			if (asrJuvenileRowName != null) {
 				countToJuvenileAgeGroups(asrJuvenileRows, arrestReportSegment.getAverageAge(), arrestReportSegment.getSexOfPersonType().getNibrsCode(), asrJuvenileRowName);
-				countToRaceGroups(asrJuvenileRows, arrestReportSegment.getRaceOfPersonType().getNibrsCode(), asrJuvenileRowName.name(), AsrJuvenileRowName.class);
+				countToRaceGroups(asrJuvenileRows, arrestReportSegment.getRaceOfPersonType(), asrJuvenileRowName.name(), AsrJuvenileRowName.class);
 				countToEthnicityGroups(asrJuvenileRows, arrestReportSegment.getEthnicityOfPersonType().getNibrsCode(), 
 						asrJuvenileRowName.name(), AsrJuvenileRowName.class);
+				if (appProperties.getStateRaceCodeMapping().size() > 0) {
+					countToStateRaceGroups(asrJuvenileRows, arrestReportSegment.getRaceOfPersonType(), asrJuvenileRowName.name(), AsrJuvenileRowName.class);
+				}
 			}
 		}
 	}
@@ -315,8 +325,12 @@ public class AsrFormService {
 			
 			if (asrJuvenileRowName != null){
 				countToJuvenileAgeGroups(asrJuvenileRows, arresteeSegment.getAverageAge(), arresteeSegment.getSexOfPersonType().getNibrsCode(), asrJuvenileRowName);
-				countToRaceGroups(asrJuvenileRows, arresteeSegment.getRaceOfPersonType().getNibrsCode(), asrJuvenileRowName.name(), AsrJuvenileRowName.class);
+				countToRaceGroups(asrJuvenileRows, arresteeSegment.getRaceOfPersonType(), asrJuvenileRowName.name(), AsrJuvenileRowName.class);
 				countToEthnicityGroups(asrJuvenileRows, arresteeSegment.getEthnicityOfPersonType().getNibrsCode(), asrJuvenileRowName.name(), AsrJuvenileRowName.class);
+				
+				if (appProperties.getStateRaceCodeMapping().size() > 0) {
+					countToStateRaceGroups(asrJuvenileRows, arresteeSegment.getRaceOfPersonType(), asrJuvenileRowName.name(), AsrJuvenileRowName.class);
+				}
 			}
 			
 		}
@@ -346,7 +360,11 @@ public class AsrFormService {
 			
 			if (asrAdultRowName != null){
 				countToAdultAgeGroups(asrAdultRows, arresteeSegment.getAverageAge(), arresteeSegment.getSexOfPersonType().getNibrsCode(), asrAdultRowName);
-				countToRaceGroups(asrAdultRows, arresteeSegment.getRaceOfPersonType().getNibrsCode(), asrAdultRowName.name(), AsrAdultRowName.class);
+				countToRaceGroups(asrAdultRows, arresteeSegment.getRaceOfPersonType(), asrAdultRowName.name(), AsrAdultRowName.class);
+				
+				if (appProperties.getStateRaceCodeMapping().size() > 0) {
+					countToStateRaceGroups(asrAdultRows, arresteeSegment.getRaceOfPersonType(), asrAdultRowName.name(), AsrAdultRowName.class);
+				}
 				countToEthnicityGroups(asrAdultRows, arresteeSegment.getEthnicityOfPersonType().getNibrsCode(), asrAdultRowName.name(), AsrAdultRowName.class);
 			}
 			
@@ -455,13 +473,14 @@ public class AsrFormService {
 		}
 	}
 
-	private void countToRaceGroups(AsrRow[] asrRows, String raceCode,
+	private void countToRaceGroups(AsrRow[] asrRows, RaceOfPersonType raceOfPersonType,
 			String asrRowName, Class asrRowEnumClass) {
+		String raceCode = raceOfPersonType.getNibrsCode(); 
 		if (StringUtils.isNotBlank(raceCode) && !"U".equals(raceCode)){
 			Race race = Race.valueOf(raceCode); 
 			asrRows[Enum.valueOf(asrRowEnumClass, asrRowName).ordinal()].getRaceGroups()[race.ordinal()]++;
 			asrRows[Enum.valueOf(asrRowEnumClass, "TOTAL").ordinal()].getRaceGroups()[race.ordinal()]++;
-			
+
 			switch (asrRowName) {
 			case "DRUG_SALE_MANUFACTURING_OPIUM_COCAINE_DERIVATIVES":
 			case "DRUG_SALE_MANUFACTURING_MARIJUANA":
@@ -488,6 +507,43 @@ public class AsrFormService {
 				break;
 			}
 
+		}
+	}
+	
+	private void countToStateRaceGroups(AsrRow[] asrRows, RaceOfPersonType raceOfPersonType,
+			String asrRowName, Class asrRowEnumClass) {
+		String raceCode = raceOfPersonType.getStateCode();
+		int stateRaceCodeIndex = appProperties.getStateRaceCodeMapping().get(raceCode); 
+		if (stateRaceCodeIndex >= 0){
+			asrRows[Enum.valueOf(asrRowEnumClass, asrRowName).ordinal()].getStateRaceGroups()[stateRaceCodeIndex]++;
+			asrRows[Enum.valueOf(asrRowEnumClass, "TOTAL").ordinal()].getStateRaceGroups()[stateRaceCodeIndex]++;
+			
+			switch (asrRowName) {
+			case "DRUG_SALE_MANUFACTURING_OPIUM_COCAINE_DERIVATIVES":
+			case "DRUG_SALE_MANUFACTURING_MARIJUANA":
+			case "DRUG_SALE_MANUFACTURING_SYNTHETIC_NARCOTICS":
+			case "DRUG_SALE_MANUFACTURING_OTHER":
+				asrRows[Enum.valueOf(asrRowEnumClass, "DRUG_SALE_MANUFACTURING_SUBTOTAL").ordinal()].getStateRaceGroups()[stateRaceCodeIndex]++;
+				asrRows[Enum.valueOf(asrRowEnumClass, "DRUG_ABUSE_VIOLATIONS_GRAND_TOTAL").ordinal()].getStateRaceGroups()[stateRaceCodeIndex]++;
+				break;
+			case "DRUG_POSSESSION_OPIUM_COCAINE_DERIVATIVES":
+			case "DRUG_POSSESSION_MARIJUANA":
+			case "DRUG_POSSESSION_SYNTHETIC_NARCOTICS":
+			case "DRUG_POSSESSION_OTHER":
+				asrRows[Enum.valueOf(asrRowEnumClass, "DRUG_POSSESSION_SUBTOTAL").ordinal()].getStateRaceGroups()[stateRaceCodeIndex]++;
+				asrRows[Enum.valueOf(asrRowEnumClass, "DRUG_ABUSE_VIOLATIONS_GRAND_TOTAL").ordinal()].getStateRaceGroups()[stateRaceCodeIndex]++;
+				break;
+			case "PROSTITUTION":
+			case "ASSISTING_PROMOTING_PROSTITUTION": 
+				asrRows[Enum.valueOf(asrRowEnumClass, "PROSTITUTION_AND_COMMERCIALIZED_VICE").ordinal()].getStateRaceGroups()[stateRaceCodeIndex]++;
+				break;
+			case "GAMBLING_TOTAL": 
+				asrRows[Enum.valueOf(asrRowEnumClass, "GAMBLING_ALL_OTHER").ordinal()].getStateRaceGroups()[stateRaceCodeIndex] ++;
+				break; 
+			default:
+				break;
+			}
+			
 		}
 	}
 	
