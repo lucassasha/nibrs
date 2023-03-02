@@ -513,8 +513,9 @@ public class AsrFormService {
 	private void countToStateRaceGroups(AsrRow[] asrRows, RaceOfPersonType raceOfPersonType,
 			String asrRowName, Class asrRowEnumClass) {
 		String raceCode = raceOfPersonType.getStateCode();
-		int stateRaceCodeIndex = appProperties.getStateRaceCodeMapping().get(raceCode); 
-		if (stateRaceCodeIndex >= 0){
+		
+		if (appProperties.getStateRaceCodeMapping().containsKey(raceCode)){
+			int stateRaceCodeIndex = appProperties.getStateRaceCodeMapping().get(raceCode); 
 			asrRows[Enum.valueOf(asrRowEnumClass, asrRowName).ordinal()].getStateRaceGroups()[stateRaceCodeIndex]++;
 			asrRows[Enum.valueOf(asrRowEnumClass, "TOTAL").ordinal()].getStateRaceGroups()[stateRaceCodeIndex]++;
 			

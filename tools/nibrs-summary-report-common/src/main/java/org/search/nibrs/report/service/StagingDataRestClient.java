@@ -81,7 +81,7 @@ public class StagingDataRestClient {
 		log.info("asrReports: " + asrReports);
 		return asrReports;
 	}
-
+	
 	public ArsonReport getArsonReportByRequest(SummaryReportRequest summaryReportRequest) {
 		
 		List<String> urlParts = Arrays.asList(appProperties.getStagingDataRestServiceBaseUrl(), 

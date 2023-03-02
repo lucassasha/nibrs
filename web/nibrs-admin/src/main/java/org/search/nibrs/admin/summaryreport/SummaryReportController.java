@@ -236,8 +236,18 @@ public class SummaryReportController {
 			HttpServletResponse response, Map<String, Object> model) throws IOException{
 		log.info("get asrReports");
 		AsrReports asrReports = restClient.getAsrReportsByRequest(summaryReportRequest);
-		XSSFWorkbook workbook = asrExcelExporter.createWorkbook(asrReports);
+		XSSFWorkbook workbook = asrExcelExporter.createWorkbook(asrReports, false);
 		String fileName = getFileName("ASR-REPORTS", asrReports.getStateName(), asrReports.getOri(), asrReports.getYear(), asrReports.getMonth());
+		downloadReport(response, workbook, fileName);
+	}
+	
+	@PostMapping("/summaryReports/asrWithStateRaceReports")
+	public void getAsrWithStateRaceByRequest(@ModelAttribute SummaryReportRequest summaryReportRequest,
+			HttpServletResponse response, Map<String, Object> model) throws IOException{
+		log.info("get asrReports");
+		AsrReports asrReports = restClient.getAsrReportsByRequest(summaryReportRequest);
+		XSSFWorkbook workbook = asrExcelExporter.createWorkbook(asrReports, true);
+		String fileName = getFileName("ASR-REPORT-StateRace", asrReports.getStateName(), asrReports.getOri(), asrReports.getYear(), asrReports.getMonth());
 		downloadReport(response, workbook, fileName);
 	}
 	

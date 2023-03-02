@@ -17,6 +17,7 @@ package org.search.nibrs.report.service;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -44,6 +45,7 @@ import org.search.nibrs.model.reports.asr.AsrAdultRowName;
 import org.search.nibrs.model.reports.asr.AsrJuvenileRow;
 import org.search.nibrs.model.reports.asr.AsrJuvenileRowName;
 import org.search.nibrs.model.reports.asr.AsrReports;
+import org.search.nibrs.model.reports.asr.AsrRow;
 import org.search.nibrs.report.SummaryReportProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,13 +54,18 @@ import org.springframework.stereotype.Service;
 public class AsrExcelExporter {
 	private static final Log log = LogFactory.getLog(AsrExcelExporter.class);
 	
+	private static final List<String> FBI_RACE_CODES_TITLES = Arrays.asList("White", "Black", "American\nIndian or\nAlaskan\nNative", 
+			"Asian", "Native\nHawaiian\nor Other\nPacific\nIslander");
+	private static final List<String> ETHNICITY_TITLES = Arrays.asList("Hispanic\nor Latino", "Not\nHispanic\nor Latino"); 
+			
 	@Autowired
 	private SummaryReportProperties appProperties;
+
 
     public void exportAsrAdultForm(AsrReports asrAdult){
         XSSFWorkbook workbook = new XSSFWorkbook();
         
-        createSheet(asrAdult, workbook);
+        createSheet(asrAdult, workbook, false);
 		
         try {
         	String fileName = appProperties.getSummaryReportOutputPath() + "/ASR-ADULT-" + asrAdult.getOri() + "-" + asrAdult.getYear() + "-" + StringUtils.leftPad(String.valueOf(asrAdult.getMonth()), 2, '0') + ".xlsx"; 
@@ -76,15 +83,23 @@ public class AsrExcelExporter {
     public XSSFWorkbook createWorkbook(AsrReports asrReports) {
         XSSFWorkbook workbook = new XSSFWorkbook();
         
-        createSheet(asrReports, workbook);
-        createJuvenileSheet(asrReports.getJuvenileRows(), workbook);
+        createSheet(asrReports, workbook, false);
+        createJuvenileSheet(asrReports.getJuvenileRows(), workbook, false);
     	return workbook;
     }
     
-    public void exportAsrJuvenileForm(AsrReports asrReports){
+    public XSSFWorkbook createWorkbook(AsrReports asrReports, boolean withStateRace) {
     	XSSFWorkbook workbook = new XSSFWorkbook();
     	
-    	createJuvenileSheet(asrReports.getJuvenileRows(), workbook);
+    	createSheet(asrReports, workbook, withStateRace);
+    	createJuvenileSheet(asrReports.getJuvenileRows(), workbook, withStateRace);
+    	return workbook;
+    }
+    
+    public void exportAsrJuvenileForm(AsrReports asrReports, boolean withStateRace){
+    	XSSFWorkbook workbook = new XSSFWorkbook();
+    	
+    	createJuvenileSheet(asrReports.getJuvenileRows(), workbook, withStateRace);
     	
     	try {
     		String fileName = appProperties.getSummaryReportOutputPath() + "/ASR-Juvenile-" + asrReports.getOri() + "-" + asrReports.getYear() + "-" + StringUtils.leftPad(String.valueOf(asrReports.getMonth()), 2, '0') + ".xlsx"; 
@@ -99,7 +114,7 @@ public class AsrExcelExporter {
     	}
     }
     
-	private void createJuvenileSheet(AsrJuvenileRow[] rows, XSSFWorkbook workbook ) {
+	private void createJuvenileSheet(AsrJuvenileRow[] rows, XSSFWorkbook workbook, boolean withStateRace ) {
         int rowNum = 0;
         log.info("Write to the excel file");
         CellStyle wrappedStyle = workbook.createCellStyle();
@@ -125,38 +140,40 @@ public class AsrExcelExporter {
 		ps.setFitWidth( (short) 1);
 		ps.setFitHeight( (short) 1);
 
-        rowNum = createAsrJuvenileTitleRow(sheet, rowNum, wrappedStyle, boldFont, normalWeightFont);
-		createAsrJuvenileHeaderRow(sheet, rowNum, boldFont, normalWeightFont);
+        rowNum = createAsrJuvenileTitleRow(sheet, rowNum, wrappedStyle, boldFont, normalWeightFont, withStateRace);
+		createAsrJuvenileHeaderRow(sheet, rowNum, boldFont, normalWeightFont, withStateRace);
 		
 		rowNum = 7;
         for (AsrJuvenileRowName rowName: AsrJuvenileRowName.values()){
-        	writeAsrJuvenileRow(sheet, rowName, rows[rowName.ordinal()], rowNum, boldFont);
+        	writeAsrJuvenileRow(sheet, rowName, rows[rowName.ordinal()], rowNum, boldFont, withStateRace);
         	rowNum += 2;
         }
         
 		sheet.setColumnWidth(0, 1400 * sheet.getDefaultColumnWidth());
 		
-		for (int i = 9; i < 15; i++) {
+		int extraColumnCount = getExtraCellCount(withStateRace); 
+		
+		for (int i = 9; i < 15 + extraColumnCount; i++) {
 			RegionUtil.setBorderRight(BorderStyle.THIN, new CellRangeAddress(1, 103, i, i), sheet);
 		}
 		
-		RegionUtil.setBorderRight(BorderStyle.THICK, new CellRangeAddress(1, 103, 15, 15), sheet);
+		RegionUtil.setBorderRight(BorderStyle.THICK, new CellRangeAddress(1, 103, 15 + extraColumnCount, 15 + extraColumnCount), sheet);
 		RegionUtil.setBorderLeft(BorderStyle.THICK, new CellRangeAddress(1, 103, 0, 0), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(103, 103, 0, 15), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(38, 38, 0, 15), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(40, 40, 0, 15), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(48, 48, 0, 15), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(50, 50, 0, 15), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(52, 52, 0, 15), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(60, 60, 0, 15), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(62, 62, 0, 15), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(70, 70, 0, 15), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(72, 72, 0, 15), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(103, 103, 0, 15 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(38, 38, 0, 15 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(40, 40, 0, 15 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(48, 48, 0, 15 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(50, 50, 0, 15 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(52, 52, 0, 15 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(60, 60, 0, 15 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(62, 62, 0, 15 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(70, 70, 0, 15 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(72, 72, 0, 15 + extraColumnCount), sheet);
 		
 
 	}
     
-	private void createSheet(AsrReports asrReports, XSSFWorkbook workbook ) {
+	private void createSheet(AsrReports asrReports, XSSFWorkbook workbook, boolean withStateRace) {
         int rowNum = 0;
         log.info("Write to the excel file");
         CellStyle wrappedStyle = workbook.createCellStyle();
@@ -182,38 +199,40 @@ public class AsrExcelExporter {
 		ps.setFitWidth( (short) 1);
 		ps.setFitHeight( (short) 0);
 
-        rowNum = createAsrAdultTitleRow(sheet, rowNum, wrappedStyle, boldFont, normalWeightFont);
-		createAsrAdultHeaderRow(sheet, rowNum, boldFont, normalWeightFont);
+        rowNum = createAsrAdultTitleRow(sheet, rowNum, wrappedStyle, boldFont, normalWeightFont, withStateRace);
+		createAsrAdultHeaderRow(sheet, rowNum, boldFont, normalWeightFont, withStateRace);
 		
 		rowNum = 7;
         for (AsrAdultRowName rowName: AsrAdultRowName.values()){
-        	writeAsrAdultRow(sheet, rowName, asrReports.getAdultRows()[rowName.ordinal()], rowNum, boldFont);
+        	writeAsrAdultRow(sheet, rowName, asrReports.getAdultRows()[rowName.ordinal()], rowNum, boldFont, withStateRace);
         	rowNum += 2;
         }
         
 		sheet.setColumnWidth(0, 700 * sheet.getDefaultColumnWidth());
 		
-		for (int i = 19; i < 25; i++) {
+		int extraColumnCount = getExtraCellCount(withStateRace); 
+		
+		for (int i = 19; i < 25 + extraColumnCount; i++) {
 			RegionUtil.setBorderRight(BorderStyle.THIN, new CellRangeAddress(1, 99, i, i), sheet);
 		}
 		
-		RegionUtil.setBorderRight(BorderStyle.THICK, new CellRangeAddress(1, 99, 25, 25), sheet);
+		RegionUtil.setBorderRight(BorderStyle.THICK, new CellRangeAddress(1, 99, 25 + extraColumnCount, 25 + extraColumnCount), sheet);
 		RegionUtil.setBorderLeft(BorderStyle.THICK, new CellRangeAddress(1, 99, 0, 0), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(99, 99, 0, 25), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(38, 38, 0, 25), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(40, 40, 0, 25), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(48, 48, 0, 25), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(50, 50, 0, 25), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(52, 52, 0, 25), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(60, 60, 0, 25), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(62, 62, 0, 25), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(70, 70, 0, 25), sheet);
-		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(72, 72, 0, 25), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(99, 99, 0, 25 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(38, 38, 0, 25 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(40, 40, 0, 25 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(48, 48, 0, 25 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(50, 50, 0, 25 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(52, 52, 0, 25 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(60, 60, 0, 25 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(62, 62, 0, 25 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(70, 70, 0, 25 + extraColumnCount), sheet);
+		RegionUtil.setBorderBottom(BorderStyle.THICK, new CellRangeAddress(72, 72, 0, 25 + extraColumnCount), sheet);
 		
 
 	}
     private void writeAsrAdultRow(XSSFSheet sheet, AsrAdultRowName rowName,
-    		AsrAdultRow asrAdultRow, int rowNum, Font boldFont) {
+    		AsrAdultRow asrAdultRow, int rowNum, Font boldFont, boolean withStateRace) {
     	Row row = sheet.createRow(rowNum);
     	int colNum = 0;
     	Cell cell = row.createCell(colNum++);
@@ -242,6 +261,8 @@ public class AsrExcelExporter {
         lightYellowForeGround.cloneStyleFrom(greyForeGround);
         lightYellowForeGround.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
         
+		int[] raceGroups = getRaceGroupsCount(asrAdultRow, withStateRace);
+
         switch(rowName){
     	case TOTAL: 
             XSSFRichTextString allBoldString = new XSSFRichTextString(rowName.getLabel());
@@ -259,10 +280,10 @@ public class AsrExcelExporter {
         		cell.setCellValue(asrAdultRow.getMaleAgeGroups()[i]);
     		}
     		
-    		for (int i = 0;  i < asrAdultRow.getRaceGroups().length; i++) {
+    		for (int i = 0;  i < raceGroups.length; i++) {
         		cell = row.createCell(colNum++);
         		cell.setCellStyle(defaultStyle);
-        		cell.setCellValue(asrAdultRow.getRaceGroups()[i]);
+        		cell.setCellValue(raceGroups[i]);
     		}
     		for (int i = 0;  i < asrAdultRow.getEthnicityGroups().length; i++) {
     			cell = row.createCell(colNum++);
@@ -322,17 +343,17 @@ public class AsrExcelExporter {
     		femaleCell.setCellValue(asrAdultRow.getFemaleAgeGroups()[ageGroupSize -1]);
     		femaleCell.setCellStyle(defaultStyle);
     		
-    		for (int i = 0;  i < asrAdultRow.getRaceGroups().length - 2; i++) {
+    		for (int i = 0;  i < appProperties.getYellowRaceCodeColumnCount(); i++) {
     			sheet.addMergedRegionUnsafe(new CellRangeAddress(rowNum-1, rowNum, colNum, colNum));
         		cell = row.createCell(colNum++);
         		cell.setCellStyle(lightYellowForeGround);
-        		cell.setCellValue(asrAdultRow.getRaceGroups()[i]);
+        		cell.setCellValue(raceGroups[i]);
     		}
-    		for (int i = 3;  i < asrAdultRow.getRaceGroups().length; i++) {
+    		for (int i = appProperties.getYellowRaceCodeColumnCount();  i < raceGroups.length; i++) {
     			sheet.addMergedRegionUnsafe(new CellRangeAddress(rowNum-1, rowNum, colNum, colNum));
     			cell = row.createCell(colNum++);
     			cell.setCellStyle(defaultStyle);
-    			cell.setCellValue(asrAdultRow.getRaceGroups()[i]);
+    			cell.setCellValue(raceGroups[i]);
     		}
     		for (int i = 0;  i < asrAdultRow.getEthnicityGroups().length; i++) {
     			sheet.addMergedRegionUnsafe(new CellRangeAddress(rowNum-1, rowNum, colNum, colNum));
@@ -342,8 +363,9 @@ public class AsrExcelExporter {
     		}
     	}
 	}
+
     private void writeAsrJuvenileRow(XSSFSheet sheet, AsrJuvenileRowName rowName,
-    		AsrJuvenileRow asrJuvenileRow, int rowNum, Font boldFont) {
+    		AsrJuvenileRow asrJuvenileRow, int rowNum, Font boldFont, boolean withStateRace) {
     	Row row = sheet.createRow(rowNum);
     	int colNum = 0;
     	Cell cell = row.createCell(colNum++);
@@ -372,6 +394,7 @@ public class AsrExcelExporter {
     	lightYellowForeGround.cloneStyleFrom(greyForeGround);
     	lightYellowForeGround.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex());
     	
+    	int[] raceGroups = getRaceGroupsCount(asrJuvenileRow, withStateRace);
     	switch(rowName){
     	case TOTAL: 
     		XSSFRichTextString allBoldString = new XSSFRichTextString(rowName.getLabel());
@@ -389,10 +412,10 @@ public class AsrExcelExporter {
     			cell.setCellValue(asrJuvenileRow.getMaleAgeGroups()[i]);
     		}
     		
-    		for (int i = 0;  i < asrJuvenileRow.getRaceGroups().length; i++) {
+    		for (int i = 0;  i < raceGroups.length; i++) {
     			cell = row.createCell(colNum++);
     			cell.setCellStyle(defaultStyle);
-    			cell.setCellValue(asrJuvenileRow.getRaceGroups()[i]);
+    			cell.setCellValue(raceGroups[i]);
     		}
     		for (int i = 0;  i < asrJuvenileRow.getEthnicityGroups().length; i++) {
     			cell = row.createCell(colNum++);
@@ -447,17 +470,18 @@ public class AsrExcelExporter {
     		femaleCell.setCellValue(asrJuvenileRow.getFemaleAgeGroups()[ageGroupSize -1]);
     		femaleCell.setCellStyle(defaultStyle);
     		
-    		for (int i = 0;  i < asrJuvenileRow.getRaceGroups().length - 2; i++) {
+
+    		for (int i = 0;  i < appProperties.getYellowRaceCodeColumnCount(); i++) {
     			sheet.addMergedRegionUnsafe(new CellRangeAddress(rowNum-1, rowNum, colNum, colNum));
     			cell = row.createCell(colNum++);
     			cell.setCellStyle(lightYellowForeGround);
-    			cell.setCellValue(asrJuvenileRow.getRaceGroups()[i]);
+    			cell.setCellValue(raceGroups[i]);
     		}
-    		for (int i = 3;  i < asrJuvenileRow.getRaceGroups().length; i++) {
+    		for (int i = appProperties.getYellowRaceCodeColumnCount();  i < raceGroups.length; i++) {
     			sheet.addMergedRegionUnsafe(new CellRangeAddress(rowNum-1, rowNum, colNum, colNum));
     			cell = row.createCell(colNum++);
     			cell.setCellStyle(defaultStyle);
-    			cell.setCellValue(asrJuvenileRow.getRaceGroups()[i]);
+    			cell.setCellValue(raceGroups[i]);
     		}
     		for (int i = 0;  i < asrJuvenileRow.getEthnicityGroups().length; i++) {
     			sheet.addMergedRegionUnsafe(new CellRangeAddress(rowNum-1, rowNum, colNum, colNum));
@@ -467,8 +491,19 @@ public class AsrExcelExporter {
     		}
     	}
     }
+	private int[] getRaceGroupsCount(AsrRow asrRow, boolean withStateRace) {
+		int[] raceGroups = null; 
+		if (!withStateRace) {
+			raceGroups = asrRow.getRaceGroups(); 
+		}
+		else {
+			raceGroups = asrRow.getStateRaceGroups();
+		}
+		return raceGroups;
+	}
+
 	private int createAsrJuvenileHeaderRow(XSSFSheet sheet, int rowNum, Font boldFont,
-			XSSFFont normalWeightFont) {
+			XSSFFont normalWeightFont, boolean withStateRace) {
 		sheet.addMergedRegion(new CellRangeAddress(1, 6, 0, 0));
 		sheet.addMergedRegion(new CellRangeAddress(1, 6, 1, 1));
 		
@@ -525,8 +560,7 @@ public class AsrExcelExporter {
 			cell2.setCellValue(ageTitles.get(j));
 		}
 		
-		List<String> raceAndEthnicityTitles = Arrays.asList("White", "Black", "American\nIndian or\nAlaskan\nNative", 
-				"Asian", "Native\nHawaiian\nor Other\nPacific\nIslander", "Hispanic\nor Latino", "Not\nHispanic\nor Latino"); 
+		List<String> raceAndEthnicityTitles = getRaceAndEthnicityTitleList(withStateRace); 
 		for (int i=9, j=0; j < raceAndEthnicityTitles.size(); i++, j++) {
 			sheet.addMergedRegion(new CellRangeAddress(2,6,i,i));
 			cell2 = row.createCell(i);
@@ -534,7 +568,7 @@ public class AsrExcelExporter {
 			cell2.setCellValue(raceAndEthnicityTitles.get(j));
 		}
 		
-		RegionUtil.setBorderTop(BorderStyle.THICK, new CellRangeAddress(1, 1, 0, 15), sheet);
+		RegionUtil.setBorderTop(BorderStyle.THICK, new CellRangeAddress(1, 1, 0, 15 + getExtraCellCount(withStateRace)), sheet);
 		RegionUtil.setBorderLeft(BorderStyle.THIN, new CellRangeAddress(1, 6, 1, 1), sheet);
 		RegionUtil.setBorderRight(BorderStyle.THIN, new CellRangeAddress(1, 6, 1, 1), sheet);
 		for (int i = 2; i < 7; i++) {
@@ -551,7 +585,7 @@ public class AsrExcelExporter {
 	}
     
 	private int createAsrAdultHeaderRow(XSSFSheet sheet, int rowNum, Font boldFont,
-			XSSFFont normalWeightFont) {
+			XSSFFont normalWeightFont, boolean withStateRace) {
 		sheet.addMergedRegion(new CellRangeAddress(1, 6, 0, 0));
 		sheet.addMergedRegion(new CellRangeAddress(1, 6, 1, 1));
 		
@@ -609,8 +643,8 @@ public class AsrExcelExporter {
 			cell2.setCellValue(ageTitles.get(j));
 		}
 		
-		List<String> raceAndEthnicityTitles = Arrays.asList("White", "Black", "American\nIndian or\nAlaskan\nNative", 
-				"Asian", "Native\nHawaiian\nor Other\nPacific\nIslander", "Hispanic\nor Latino", "Not\nHispanic\nor Latino"); 
+		List<String> raceAndEthnicityTitles = getRaceAndEthnicityTitleList(withStateRace); 
+		
 		for (int i=19, j=0; j < raceAndEthnicityTitles.size(); i++, j++) {
 			sheet.addMergedRegion(new CellRangeAddress(2,6,i,i));
 			cell2 = row.createCell(i);
@@ -618,7 +652,7 @@ public class AsrExcelExporter {
 			cell2.setCellValue(raceAndEthnicityTitles.get(j));
 		}
 		
-		RegionUtil.setBorderTop(BorderStyle.THICK, new CellRangeAddress(1, 1, 0, 25), sheet);
+		RegionUtil.setBorderTop(BorderStyle.THICK, new CellRangeAddress(1, 1, 0, 25 + getExtraCellCount(withStateRace)), sheet);
 		RegionUtil.setBorderLeft(BorderStyle.THIN, new CellRangeAddress(1, 6, 1, 1), sheet);
 		RegionUtil.setBorderRight(BorderStyle.THIN, new CellRangeAddress(1, 6, 1, 1), sheet);
 		for (int i = 2; i < 17; i++) {
@@ -630,11 +664,26 @@ public class AsrExcelExporter {
 		
 		return rowNum;
 	}
+
+	private List<String> getRaceAndEthnicityTitleList(boolean withStateRace) {
+		List<String> raceAndEthnicityTitles = new ArrayList<String>();
+		if (withStateRace) {
+			raceAndEthnicityTitles.addAll(appProperties.getStateRaceCodeTitles());
+		}
+		else {
+			raceAndEthnicityTitles.addAll(FBI_RACE_CODES_TITLES); 
+		}
+		
+		raceAndEthnicityTitles.addAll(ETHNICITY_TITLES);
+		return raceAndEthnicityTitles;
+	}
 	
-	private int createAsrAdultTitleRow(XSSFSheet sheet, int rowNum, CellStyle cs, Font boldFont, XSSFFont normalWeightFont) {
+	private int createAsrAdultTitleRow(XSSFSheet sheet, int rowNum, CellStyle cs, Font boldFont, XSSFFont normalWeightFont, boolean withStateRace) {
+		int extraCellCount = getExtraCellCount(withStateRace);
+		
 		Row row = sheet.createRow(rowNum++);
     	row.setHeightInPoints((3*sheet.getDefaultRowHeightInPoints()));
-    	sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 25));
+    	sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 25 + extraCellCount));
 		Cell cell = row.createCell(0);
 		
         CellStyle centered = sheet.getWorkbook().createCellStyle();
@@ -651,11 +700,19 @@ public class AsrExcelExporter {
 
 		return rowNum;
 	}
+
+	private int getExtraCellCount(boolean withStateRace) {
+		int extraCellCount = 0; 
+		if (withStateRace) {
+			extraCellCount = appProperties.getStateRaceCodeTitles().size() - FBI_RACE_CODES_TITLES.size();
+		}
+		return extraCellCount;
+	}
     
-	private int createAsrJuvenileTitleRow(XSSFSheet sheet, int rowNum, CellStyle cs, Font boldFont, XSSFFont normalWeightFont) {
+	private int createAsrJuvenileTitleRow(XSSFSheet sheet, int rowNum, CellStyle cs, Font boldFont, XSSFFont normalWeightFont, boolean withStateRace) {
 		Row row = sheet.createRow(rowNum++);
 		row.setHeightInPoints((3*sheet.getDefaultRowHeightInPoints()));
-		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 15));
+		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 15 + getExtraCellCount(withStateRace)));
 		Cell cell = row.createCell(0);
 		
 		CellStyle centered = sheet.getWorkbook().createCellStyle();

@@ -15,6 +15,9 @@
  */
 package org.search.nibrs.report;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +27,8 @@ public class SummaryReportProperties {
 
 	private String stagingDataRestServiceBaseUrl = "http://localhost:9080";
 	private String summaryReportOutputPath = ".";
+	private List<String> stateRaceCodeTitles = new ArrayList<>();
+	private int yellowRaceCodeColumnCount = 3;
 	
 	public String getStagingDataRestServiceBaseUrl() {
 		return stagingDataRestServiceBaseUrl;
@@ -45,6 +50,22 @@ public class SummaryReportProperties {
 	public String toString() {
 		return "SummaryReportProperties [stagingDataRestServiceBaseUrl=" + stagingDataRestServiceBaseUrl
 				+ ", summaryReportOutputPath=" + summaryReportOutputPath + "]";
+	}
+
+	public List<String> getStateRaceCodeTitles() {
+		return stateRaceCodeTitles;
+	}
+
+	public void setStateRaceCodeTitles(List<String> stateRaceCodeTitles) {
+		this.stateRaceCodeTitles = stateRaceCodeTitles;
+	}
+
+	public int getYellowRaceCodeColumnCount() {
+		return yellowRaceCodeColumnCount;
+	}
+
+	public void setYellowRaceCodeColumnCount(int yellowRaceCodeColumnCount) {
+		this.yellowRaceCodeColumnCount = yellowRaceCodeColumnCount;
 	}
 
 }

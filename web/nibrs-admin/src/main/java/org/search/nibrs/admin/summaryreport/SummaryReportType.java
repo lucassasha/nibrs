@@ -20,12 +20,12 @@ public enum SummaryReportType {
 	returnARecordCard("Return A by Month and Year"), 
 	returnASupplement("Return A Supplement"), 
 	asrReports("ASR Adult/Juvenile"), 
-	asrWithStateRaceReports("ASR Adult/Juvenile With State Race Codes"), 
+	asrWithStateRaceReports("ASR Adult/Juvenile - State Race"), 
 	arsonReport("Arson"), 
 	humanTraffickingReport("Human Trafficking"),
 	cargoTheftReport("Cargo Theft"),
     shrReports("SHR Negligent/Non Negligent"),
-	shrWithStateRaceReports("SHR Negligent/Non Negligent With State Race Codes");
+	shrWithStateRaceReports("SHR Negligent/Non Negligent- State Race");
 	
 	private String description;
 	private SummaryReportType(String description) {

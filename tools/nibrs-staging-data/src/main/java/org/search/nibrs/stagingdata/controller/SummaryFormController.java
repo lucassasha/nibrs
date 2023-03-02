@@ -80,7 +80,7 @@ public class SummaryFormController {
 	public AsrReports getAsrReportsByRequest(@RequestBody SummaryReportRequest summaryReportRequest){
 		return asrFormService.createAsrSummaryReportsByRequest(summaryReportRequest);
 	}
-	
+		
 	@PostMapping("/shrReports")
 	public SupplementaryHomicideReport getSupplementaryHomicideReports(@RequestBody SummaryReportRequest summaryReportRequest){
 		return supplementaryHomicideReportService.createSupplementaryHomicideReportByRequest(summaryReportRequest);
