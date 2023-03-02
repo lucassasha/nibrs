@@ -42,7 +42,8 @@ public class AgencyRepositorCustomImpl implements AgencyRepositoryCustom{
 				    "   distinct (stateCode) as stateCode , " +
 				    "   stateName as stateName " +
 				    "from Agency a " +
-				    "where exists (select adminSegment from AdministrativeSegment adminSegment " + 
+				    "where a.agencyId != 99998 "
+				    + "	AND exists (select adminSegment from AdministrativeSegment adminSegment " + 
 				    "				where adminSegment.agency.agencyId = a.agencyId " + 
 				    "				AND (?1 = null OR adminSegment.owner.ownerId = ?1 )) " + 
 				    "	OR exists (select arrestReportSegment from ArrestReportSegment arrestReportSegment " + 
