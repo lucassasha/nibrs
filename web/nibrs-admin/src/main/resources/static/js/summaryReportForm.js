@@ -171,7 +171,7 @@
    }
    
    $('#submit').click( function(){
-	 $("#loadingText").removeClass("d-none");
+	   $("#loadingText").removeClass("d-none");
      var formData = $('#summaryReportRequestForm').serialize(); 
      
      if (typeof _csrf_param_name !== 'undefined'){
