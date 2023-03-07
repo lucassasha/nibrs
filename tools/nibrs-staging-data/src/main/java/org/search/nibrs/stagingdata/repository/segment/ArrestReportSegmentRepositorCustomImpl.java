@@ -113,8 +113,8 @@ public class ArrestReportSegmentRepositorCustomImpl implements ArrestReportSegme
         	if (incidentSearchRequest.getFbiSubmissionTimestampStart() != null) {
         		predicates.add(criteriaBuilder.and(criteriaBuilder.greaterThanOrEqualTo(submissionJoin.get("submissionTimestamp"), incidentSearchRequest.getFbiSubmissionTimestampStart())));
         	}
-        	if (incidentSearchRequest.getReportTimestampEndDate() != null) {
-        		predicates.add(criteriaBuilder.and(criteriaBuilder.lessThan(submissionJoin.get("submissionTimestamp"), incidentSearchRequest.getReportTimestampEndDate())));
+        	if (incidentSearchRequest.getFbiSubmissionTimestampEnd() != null) {
+        		predicates.add(criteriaBuilder.and(criteriaBuilder.lessThan(submissionJoin.get("submissionTimestamp"), incidentSearchRequest.getFbiSubmissionTimestampEnd())));
         	}
         	
         	if (incidentSearchRequest.getOwnerId() != null) {
