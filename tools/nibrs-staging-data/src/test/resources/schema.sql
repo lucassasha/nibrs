@@ -149,6 +149,7 @@ CREATE TABLE TypeOfWeaponForceInvolvedType (
                 StateDescription VARCHAR(30) NOT NULL,
                 NIBRSCode VARCHAR(2) NOT NULL,
                 NIBRSDescription VARCHAR(30) NOT NULL,
+                TypeOfWeaponForceInvolvedCategory VARCHAR(40) NOT NULL,
                 CONSTRAINT TypeOfWeaponForceInvolvedType_pk PRIMARY KEY (TypeOfWeaponForceInvolvedTypeID)
 );
 
