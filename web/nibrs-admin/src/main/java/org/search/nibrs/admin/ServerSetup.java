@@ -15,6 +15,9 @@
  */
 package org.search.nibrs.admin;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.ajp.AbstractAjpProtocol;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +43,14 @@ public class ServerSetup {
             final AbstractAjpProtocol<?> protocol = (AbstractAjpProtocol<?>) ajpConnector.getProtocolHandler();
             ajpConnector.setSecure(false);
             protocol.setSecretRequired(false);            
+            try
+            {
+                protocol.setAddress( InetAddress.getByName( "0.0.0.0" ) );
+            }
+            catch( UnknownHostException e )
+            {
+                e.printStackTrace();
+            }
             tomcat.addAdditionalTomcatConnectors(ajpConnector);
         }
      
