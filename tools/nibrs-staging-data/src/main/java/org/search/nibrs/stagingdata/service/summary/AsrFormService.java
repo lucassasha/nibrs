@@ -514,6 +514,9 @@ public class AsrFormService {
 			String asrRowName, Class asrRowEnumClass) {
 		String raceCode = raceOfPersonType.getStateCode();
 		
+		if (StringUtils.isBlank(raceCode)) {
+			raceCode = "U"; 
+		}
 		if (appProperties.getStateRaceCodeMapping().containsKey(raceCode)){
 			int stateRaceCodeIndex = appProperties.getStateRaceCodeMapping().get(raceCode); 
 			asrRows[Enum.valueOf(asrRowEnumClass, asrRowName).ordinal()].getStateRaceGroups()[stateRaceCodeIndex]++;

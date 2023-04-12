@@ -541,13 +541,13 @@ public class AsrExcelExporter {
 		cell3.setCellStyle(normalStyle);
 		cell3.setCellValue("TOTAL\nUnder\n18");
 		
-		sheet.addMergedRegion(new CellRangeAddress(1,1,9,13));
-		Cell cell4 = row.createCell(4);
+		sheet.addMergedRegion(new CellRangeAddress(1,1,9,13 + getExtraCellCount(withStateRace)));
+		Cell cell4 = row.createCell(9);
 		cell4.setCellStyle(boldStyle);
 		cell4.setCellValue("RACE");
 		
-		sheet.addMergedRegion(new CellRangeAddress(1,1,14,15));
-		Cell cell5 = row.createCell(5);
+		sheet.addMergedRegion(new CellRangeAddress(1,1,14 + getExtraCellCount(withStateRace), 15 + getExtraCellCount(withStateRace)));
+		Cell cell5 = row.createCell(14 + getExtraCellCount(withStateRace));
 		cell5.setCellStyle(boldStyle);
 		cell5.setCellValue("ETHNICITY");
 		
@@ -623,13 +623,13 @@ public class AsrExcelExporter {
 		cell3.setCellStyle(normalStyle);
 		cell3.setCellValue("TOTAL");
 		
-		sheet.addMergedRegion(new CellRangeAddress(1,1,19,23));
-		Cell cell4 = row.createCell(4);
+		sheet.addMergedRegion(new CellRangeAddress(1,1,19,23 + getExtraCellCount(withStateRace)));
+		Cell cell4 = row.createCell(19);
 		cell4.setCellStyle(boldStyle);
 		cell4.setCellValue("RACE");
 		
-		sheet.addMergedRegion(new CellRangeAddress(1,1,24,25));
-		Cell cell5 = row.createCell(5);
+		sheet.addMergedRegion(new CellRangeAddress(1,1,24 + getExtraCellCount(withStateRace), 25 + getExtraCellCount(withStateRace)));
+		Cell cell5 = row.createCell(24 + getExtraCellCount(withStateRace));
 		cell5.setCellStyle(boldStyle);
 		cell5.setCellValue("ETHNICITY");
 		
