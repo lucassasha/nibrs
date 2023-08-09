@@ -22,7 +22,7 @@
 # run:
 #   mysql -u analytics -h localhost -P 23306 --protocol=tcp
 
-FROM alpine
+FROM alpine:3.18.3
 
 # by default, the image includes a demo dataset so that containers can start with a test/demo set of data, ready to go.
 # however, in a production environment, you typically want to bring up an empty database that will subsequently be loaded
