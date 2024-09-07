@@ -20,7 +20,7 @@
 
 # Before building this image, you need to copy ../../db/schema-mysql.sql into the files/ directory
 
-FROM alpine
+FROM alpine:3.20.3
 
 RUN apk add --update bash mariadb mariadb-client
 
